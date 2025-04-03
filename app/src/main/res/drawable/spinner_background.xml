@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF"/> <!-- Білий фон для самого Spinner -->
+    <corners android:radius="8dp"/> <!-- Круглі кути -->
+    <stroke android:color="#83898E" android:width="2dp"/> <!-- Чорний обвід -->
+</shape>

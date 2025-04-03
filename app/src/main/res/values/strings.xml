@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Coffee Mark</string>
+    <string name="add_a_coffee_shop">Add a coffee shop</string>
+    <string name="register">Register</string>
+    <string name="coffee_shop_address">Coffee shop address</string>
+    <string name="name_of_the_coffee_shop">Name of the coffee shop</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter password</string>
+    <string name="enter_username">Enter username</string>
+    <string name="enter_cafe_name">Enter cafe name</string>
+    <string name="enter_cafe_address">Enter cafe address</string>
+    <string-array name="user_roles">
+        <item>CLIENT</item>
+        <item>BARISTA</item>
+    </string-array>
+</resources>

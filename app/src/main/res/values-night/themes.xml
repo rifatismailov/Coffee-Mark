@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CoffeeMark" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Основні кольори -->
+        <item name="colorPrimary">@color/custom_primary</item>
+        <item name="colorPrimaryVariant">@color/custom_primary_variant</item>
+        <item name="colorAccent">@color/custom_accent</item>
+
+        <!-- Колір фону -->
+        <item name="android:windowBackground">@color/custom_background</item>
+
+        <!-- Колір тексту -->
+        <item name="android:textColorPrimary">@color/custom_text</item>
+    </style>
+</resources>

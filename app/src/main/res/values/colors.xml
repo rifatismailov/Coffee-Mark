@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Світлі кольори -->
+    <color name="custom_primary_light">#6200EE</color>
+    <color name="custom_primary_dark_light">#3700B3</color>
+    <color name="custom_accent_light">#03DAC5</color>
+
+    <color name="custom_primary_variant">#3700B3</color>
+    <color name="custom_background">#FFFFFF</color>
+    <color name="custom_text">#000000</color>
+    <!-- Темні кольори -->
+
+    <color name="custom_spinner_background">#EFEFEF</color>
+    <color name="custom_spinner_text">#000000</color>
+
+
+    <color name="custom_primary_dark_variant">#121212</color>
+    <color name="custom_accent_dark">#BB86FC</color>
+    <color name="custom_primary">#6200EE</color> <!-- Основний колір -->
+    <color name="custom_primary_dark">#3700B3</color> <!-- Темний основний колір -->
+    <color name="custom_accent">#03DAC5</color> <!-- Акцентний колір -->
+    <color name="custom_background_light">#FFFFFF</color> <!-- Фон для світлої теми -->
+    <color name="custom_text_light">#000000</color> <!-- Текст для світлої теми -->
+    <color name="custom_background_dark">#121212</color> <!-- Фон для темної теми -->
+    <color name="custom_text_dark">#FFFFFF</color> <!-- Текст для темної теми -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#B9BBBD</color>
+    <color name="colorBackground">#333C46</color>
+    <color name="colorSplashText">#F0F0F0</color>
+    <color name="colorProgressBar">#FFCE511C</color>
+    <color name="colorBluishGray">#83898E</color>
+
+</resources>

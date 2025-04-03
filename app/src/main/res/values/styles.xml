@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <style name="CustomButtonStyle">
+        <item name="buttonColor">@color/custom_accent_dark</item>
+        <item name="borderColor">@color/white</item>
+        <item name="borderWidth">@dimen/border_width</item>
+        <item name="buttonRadius">@dimen/button_radius</item>
+    </style>
+
+
+    <style name="CustomSpinner" parent="Widget.AppCompat.Spinner">
+        <!-- Колір фону -->
+        <item name="android:background">@color/custom_spinner_background</item>
+        <!-- Колір тексту -->
+        <item name="android:textColor">@color/custom_spinner_text</item>
+    </style>
+</resources>
