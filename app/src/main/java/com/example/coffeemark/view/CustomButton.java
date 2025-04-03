@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+
 import androidx.appcompat.widget.AppCompatButton;
+
 import com.example.coffeemark.R;
 
 public class CustomButton extends AppCompatButton {
@@ -15,6 +17,7 @@ public class CustomButton extends AppCompatButton {
     private int buttonColor;
     private int borderColor;
     private int borderWidth; // Ширина рамки
+    private boolean buttonProgress;
 
     private Handler handler = new Handler();
     private boolean isAnimating = false; // Стан анімації
@@ -46,6 +49,7 @@ public class CustomButton extends AppCompatButton {
                 cornerRadius = a.getDimensionPixelSize(R.styleable.CustomButton_buttonRadius, 5);
                 borderWidth = a.getDimensionPixelSize(R.styleable.CustomButton_borderWidth, 2);
                 message = a.getString(R.styleable.CustomButton_buttonText);
+                buttonProgress = a.getBoolean(R.styleable.CustomButton_buttonProgress, false);
             } finally {
                 a.recycle();
             }
@@ -76,14 +80,13 @@ public class CustomButton extends AppCompatButton {
         message = text;
         isAnimating = true;
         dotCount = 0;
-
-        handler.postDelayed(loadingRunnable, 500);
+        if (buttonProgress) handler.postDelayed(loadingRunnable, 500);
     }
 
     // Зупиняє анімацію
     public void stopLoading() {
         isAnimating = false;
-        handler.removeCallbacks(loadingRunnable);
+        if (buttonProgress) handler.removeCallbacks(loadingRunnable);
         setText(message); // Повертає стандартний текст
     }
 

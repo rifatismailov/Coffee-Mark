@@ -6,6 +6,7 @@
         <attr name="borderWidth" format="dimension"/>
         <attr name="buttonRadius" format="dimension"/>
         <attr name="buttonText" format="string"/>
+        <attr name="buttonProgress" format="boolean"/>
 
     </declare-styleable>
 

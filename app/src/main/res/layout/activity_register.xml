@@ -129,12 +129,19 @@
     </ScrollView>
 
     <!-- Кнопка Додати кав'ярню -->
-    <com.google.android.material.button.MaterialButton
+    <com.example.coffeemark.view.CustomButton
         android:id="@+id/add_cafe_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_marginBottom="10dp"
+        android:visibility="visible"
+        android:textColor="@color/white"
+        app:buttonColor="@color/colorBluishGray"
+        app:borderColor="@color/white"
+        app:borderWidth="2dp"
+        app:buttonRadius="22dp"
+        app:buttonProgress="false"
         android:text="@string/add_a_coffee_shop"
         app:layout_constraintBottom_toTopOf="@+id/register_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -150,10 +157,11 @@
         android:layout_marginBottom="10dp"
         android:text="@string/register"
         android:textColor="@color/white"
-        app:buttonColor="@color/custom_accent_dark"
+        app:buttonColor="@color/colorBluishGray"
         app:borderColor="@color/white"
         app:borderWidth="2dp"
         app:buttonRadius="22dp"
+        app:buttonProgress="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
