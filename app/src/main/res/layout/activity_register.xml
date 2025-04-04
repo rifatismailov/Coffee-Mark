@@ -18,13 +18,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:gravity="center"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/image_coffe_on_table" />
-            <!-- Поля для введення -->
+            <com.example.coffeemark.view.CoffeeView
+                android:id="@+id/coffee_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                 />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

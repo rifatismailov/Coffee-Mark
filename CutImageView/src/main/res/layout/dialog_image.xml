@@ -1,0 +1,50 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Зображення профілю -->
+    <ImageView
+        android:id="@+id/imageProfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:scaleType="fitCenter" />
+
+    <!-- Рамка обрізання -->
+    <com.example.cutimageview.cut_image.CustomCropView
+        android:id="@+id/cropFrame"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:layout_gravity="center"
+        android:alpha="0.5"
+        android:background="@drawable/crop_frame_background" />
+
+    <!-- Кнопка для обрізання -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCrop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="16sp"
+        android:backgroundTint="@color/black"
+        android:paddingHorizontal="32sp"
+        android:paddingVertical="12sp"
+        android:text="@string/cut"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white" />
+
+
+    <!-- Зображення акаунта -->
+    <ImageView
+        android:id="@+id/imageAccount"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16sp"
+        android:background="@color/white"
+        android:scaleType="centerCrop" />
+
+</FrameLayout>

@@ -1,11 +1,18 @@
 package com.example.coffeemark.registration;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,16 +20,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.coffeemark.R;
 import com.example.coffeemark.registration.cafe.Cafe;
 import com.example.coffeemark.registration.cafe.CafeAdapter;
+import com.example.coffeemark.util.BitmapToFile;
+import com.example.coffeemark.uploader.Uploader;
+import com.example.coffeemark.util.ImageHandler;
+import com.example.coffeemark.util.UrlBuilder;
+import com.example.coffeemark.user.DatabaseHelper;
+import com.example.coffeemark.user.User;
+import com.example.coffeemark.view.CoffeeView;
 import com.example.coffeemark.view.CustomButton;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements Uploader.Operation {
+    private CoffeeView coffeeView;
     private EditText username, password, email, cafeName, cafeAddress;
     private Spinner roleSpinner;
     private LinearLayout cafeLayout;
@@ -33,12 +52,15 @@ public class RegisterActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
 
     private ApiService apiService;
+    private DatabaseHelper dbHelper;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
+        dbHelper = new DatabaseHelper(this);
+        coffeeView = findViewById(R.id.coffee_view);
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
         email = findViewById(R.id.email);
@@ -49,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
         addCafeButton = findViewById(R.id.add_cafe_button);
         registerButton = findViewById(R.id.register_button);
         recyclerView = findViewById(R.id.cafeList);
+
 
         // Ініціалізація списку та адаптера
         adapter = new CafeAdapter(cafeList);
@@ -91,18 +114,19 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(v -> {
             registerUser();
         });
+        coffeeView.setOnClickListener(view -> openGallery());
     }
 
     private void registerUser() {
-        String user = username.getText().toString();
-        String pass = password.getText().toString();
-        String mail = email.getText().toString();
+        String userName = username.getText().toString();
+        String userPassword = password.getText().toString();
+        String userEmail = email.getText().toString();
         String role = roleSpinner.getSelectedItem().toString();
-        boolean isValid = FieldValidator.areFieldsValid(user, pass, mail, role);
+        boolean isValid = FieldValidator.areFieldsValid(userName, userPassword, userEmail, role);
 
         if (isValid) {
             registerButton.onPress("Please wait");
-            RegisterRequest request = new RegisterRequest(user, pass, mail, role, role.equals("BARISTA") ? cafeList : null);
+            RegisterRequest request = new RegisterRequest(userName, userPassword, userEmail, role, role.equals("BARISTA") ? cafeList : null);
 
             apiService.registerUser(request).enqueue(new Callback<RegisterResponse>() {
 
@@ -118,6 +142,10 @@ public class RegisterActivity extends AppCompatActivity {
                             if (registerResponse.isSuccess()) {
                                 Toast.makeText(RegisterActivity.this, "Message: " + message, Toast.LENGTH_SHORT).show();
                                 registerButton.stopLoading();
+                                dbHelper.setUser(new User(userName, userPassword, userEmail, role));
+
+                                // Зчитуємо всіх користувачів
+                                dbHelper.getAllUsers();
                             } else {
                                 Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
 
@@ -157,6 +185,62 @@ public class RegisterActivity extends AppCompatActivity {
             // Поля не заповнені
             Toast.makeText(RegisterActivity.this, "Заповніть буд ласка всі поля", Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+    // Вибір зображення
+    private void openGallery() {
+        // Потім просто викликаєш:
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
+    }
+
+
+    ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri imageUri = result.getData().getData();
+                    handleImageUri(imageUri);
+                    // Тут передаєш URI у свою функцію для обробки
+                }
+            }
+    );
+
+    // Метод для обробки зображення
+    private void handleImageUri(Uri uri) {
+        try {
+            String serverUrl = new UrlBuilder.Builder()
+                    .setProtocol("http")
+                    .setIp("192.168.177.4")
+                    .setPort("8020")
+                    .setDirectory("/api/files/upload")
+                    .build()
+                    .buildUrl();
+
+            ImageHandler imageHandler = new ImageHandler(this);
+            coffeeView.setImageBitmap(imageHandler.getBitmap(uri));
+
+            File savedFile = imageHandler.processAndSaveImage(uri);
+            Log.e("RegisterActivity", "Saved to: " + savedFile.getAbsolutePath());
+
+            new Uploader(this, serverUrl).uploadFile(savedFile);
+        } catch (IOException e) {
+            Log.e("RegisterActivity", "Image processing failed", e);
+        }
+    }
+
+
+
+    @Override
+    public void setProgress(int progress, String info) {
+        Log.e("RegisterActivity", progress + " " + info);
+
+    }
+
+    @Override
+    public void endProgress(String positionId, String info) {
+        Log.e("RegisterActivity", positionId + " " + info);
 
     }
 }
