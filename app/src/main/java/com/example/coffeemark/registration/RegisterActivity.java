@@ -49,10 +49,9 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
     private CustomButton registerButton;
     private final List<Cafe> cafeList = new ArrayList<>();
     private CafeAdapter adapter;
-    private RecyclerView recyclerView;
-
     private ApiService apiService;
     private DatabaseHelper dbHelper;
+    private String cafeImage;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -70,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
         cafeAddress = findViewById(R.id.cafeAddress);
         addCafeButton = findViewById(R.id.add_cafe_button);
         registerButton = findViewById(R.id.register_button);
-        recyclerView = findViewById(R.id.cafeList);
+        RecyclerView recyclerView = findViewById(R.id.cafeList);
 
 
         // Ініціалізація списку та адаптера
@@ -126,7 +125,8 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
 
         if (isValid) {
             registerButton.onPress("Please wait");
-            RegisterRequest request = new RegisterRequest(userName, userPassword, userEmail, role, role.equals("BARISTA") ? cafeList : null);
+            RegisterRequest request = new RegisterRequest(userName, userPassword, userEmail, role, role.equals("BARISTA") ? cafeList : null,
+                    !cafeImage.isEmpty() ? cafeImage : "");
 
             apiService.registerUser(request).enqueue(new Callback<RegisterResponse>() {
 
@@ -222,6 +222,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
             coffeeView.setImageBitmap(imageHandler.getBitmap(uri));
 
             File savedFile = imageHandler.processAndSaveImage(uri);
+            cafeImage = imageHandler.getSavedFileName();
             Log.e("RegisterActivity", "Saved to: " + savedFile.getAbsolutePath());
 
             new Uploader(this, serverUrl).uploadFile(savedFile);
@@ -231,16 +232,13 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
     }
 
 
-
     @Override
     public void setProgress(int progress, String info) {
         Log.e("RegisterActivity", progress + " " + info);
-
     }
 
     @Override
     public void endProgress(String positionId, String info) {
         Log.e("RegisterActivity", positionId + " " + info);
-
     }
 }

@@ -13,6 +13,7 @@ public class ImageHandler {
 
     private final Context context;
     private final File saveDir;
+    private String savedFileName;
 
     public ImageHandler(Context context) {
         this.context = context;
@@ -25,8 +26,12 @@ public class ImageHandler {
     public File processAndSaveImage(Uri uri) throws IOException {
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
         String fileName = UUID.randomUUID().toString();
-        String savedFileName = new BitmapToFile().saveBitmapToFile(bitmap, fileName, saveDir);
+        savedFileName = new BitmapToFile().saveBitmapToFile(bitmap, fileName, saveDir);
         return new File(saveDir, savedFileName);
+    }
+
+    public String getSavedFileName() {
+        return savedFileName;
     }
 
     public Bitmap getBitmap(Uri uri) throws IOException {
