@@ -10,15 +10,15 @@ public class RegisterRequest {
     private final String email;
     private final String role;
     private final List<Cafe> cafes;  // Змінив з cafeList на cafes
-    private final String cafeImage;
+    private final String image;
 
-    public RegisterRequest(String username, String password, String email, String role, List<Cafe> cafes, String cafeImage) {
+    public RegisterRequest(String username, String password, String email, String role, List<Cafe> cafes, String image) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
         this.cafes = cafes;
-        this.cafeImage=cafeImage;
+        this.image = image;
     }
 
     public String getUsername() {
@@ -41,7 +41,7 @@ public class RegisterRequest {
         return cafes;
     }
 
-    public String getCafeImage() {
-        return cafeImage;
+    public String getImage() {
+        return image;
     }
 }

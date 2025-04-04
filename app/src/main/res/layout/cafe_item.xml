@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <com.example.coffeemark.view.CoffeeView
-            android:id="@+id/contactCircularImageView"
+            android:id="@+id/cafe_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@color/white"
@@ -32,7 +32,7 @@
             android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/contactCircularImageView"
+            app:layout_constraintStart_toEndOf="@id/cafe_image"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView

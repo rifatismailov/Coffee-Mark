@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.List;
 
@@ -11,9 +13,20 @@ public class DatabaseHelper {
     private AppDatabase db;
     private UserDao userDao;
 
+    // Міграція з версії 1 на версію 2 (додання нового поля myImage)
+    private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // Додаємо нову колонку myImage до таблиці users
+            database.execSQL("ALTER TABLE users ADD COLUMN myImage TEXT");
+        }
+    };
+
     public DatabaseHelper(Context context) {
-        // Ініціалізація Room Database
-        db = Room.databaseBuilder(context, AppDatabase.class, "coffee_mark_database").build();
+        // Ініціалізація Room Database з міграцією
+        db = Room.databaseBuilder(context, AppDatabase.class, "coffee_mark_database")
+                .addMigrations(MIGRATION_1_2)  // Додаємо міграцію
+                .build();
         userDao = db.userDao();  // Отримуємо DAO
     }
 
@@ -33,7 +46,7 @@ public class DatabaseHelper {
                 List<User> users = userDao.getAllUsers();
                 // Робіть щось з отриманими даними (наприклад, оновіть UI)
                 for (User user : users) {
-                    Log.e("User", "Username: " + user.getUsername());
+                    Log.e("User", "Username: " + user.getUsername()+" image: " + user.getMyImage());
                 }
             }
         }).start();
@@ -51,5 +64,12 @@ public class DatabaseHelper {
             }
         }).start();
     }
-}
 
+    public void deleteAllUsers(){
+        new Thread(() -> {
+            db.userDao().deleteAllUsers();
+            db.userDao().resetAutoIncrement();
+        }).start();
+
+    }
+}

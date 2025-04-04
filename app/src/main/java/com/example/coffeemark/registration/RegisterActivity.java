@@ -3,7 +3,6 @@ package com.example.coffeemark.registration;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.coffeemark.R;
 import com.example.coffeemark.registration.cafe.Cafe;
 import com.example.coffeemark.registration.cafe.CafeAdapter;
-import com.example.coffeemark.util.BitmapToFile;
 import com.example.coffeemark.uploader.Uploader;
 import com.example.coffeemark.util.ImageHandler;
 import com.example.coffeemark.util.UrlBuilder;
@@ -38,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class RegisterActivity extends AppCompatActivity implements Uploader.Operation {
     private CoffeeView coffeeView;
@@ -51,7 +48,8 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
     private CafeAdapter adapter;
     private ApiService apiService;
     private DatabaseHelper dbHelper;
-    private String cafeImage;
+    private String image;
+    private ImageHandler imageHandler;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -71,9 +69,9 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
         registerButton = findViewById(R.id.register_button);
         RecyclerView recyclerView = findViewById(R.id.cafeList);
 
-
+        imageHandler = new ImageHandler(this);
         // Ініціалізація списку та адаптера
-        adapter = new CafeAdapter(cafeList);
+        adapter = new CafeAdapter(cafeList, imageHandler);
         // Налаштовуємо RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -101,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
             String name = cafeName.getText().toString();
             String address = cafeAddress.getText().toString();
             if (!name.isEmpty() && !address.isEmpty()) {
-                cafeList.add(new Cafe(name, address));
+                cafeList.add(new Cafe(name, address, image));
                 adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
 
                 cafeName.setText("");
@@ -126,7 +124,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
         if (isValid) {
             registerButton.onPress("Please wait");
             RegisterRequest request = new RegisterRequest(userName, userPassword, userEmail, role, role.equals("BARISTA") ? cafeList : null,
-                    !cafeImage.isEmpty() ? cafeImage : "");
+                    !image.isEmpty() ? image : "");
 
             apiService.registerUser(request).enqueue(new Callback<RegisterResponse>() {
 
@@ -142,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
                             if (registerResponse.isSuccess()) {
                                 Toast.makeText(RegisterActivity.this, "Message: " + message, Toast.LENGTH_SHORT).show();
                                 registerButton.stopLoading();
-                                dbHelper.setUser(new User(userName, userPassword, userEmail, role));
+                                dbHelper.setUser(new User(userName, userPassword, userEmail, role, image));
 
                                 // Зчитуємо всіх користувачів
                                 dbHelper.getAllUsers();
@@ -218,11 +216,11 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
                     .build()
                     .buildUrl();
 
-            ImageHandler imageHandler = new ImageHandler(this);
+
             coffeeView.setImageBitmap(imageHandler.getBitmap(uri));
 
             File savedFile = imageHandler.processAndSaveImage(uri);
-            cafeImage = imageHandler.getSavedFileName();
+            image = imageHandler.getSavedFileName();
             Log.e("RegisterActivity", "Saved to: " + savedFile.getAbsolutePath());
 
             new Uploader(this, serverUrl).uploadFile(savedFile);

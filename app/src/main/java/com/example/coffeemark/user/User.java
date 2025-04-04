@@ -13,13 +13,16 @@ public class User {
     private String password;
     private String email;
     private String role;
+    private String myImage;
+
 
     // Конструктори, геттери і сеттери
-    public User(String username, String password, String email, String role) {
+    public User(String username, String password, String email, String role,String myImage) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.myImage = myImage;
     }
 
     // Геттери для всіх полів
@@ -62,6 +65,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getMyImage() {
+        return myImage;
+    }
+
+    public void setMyImage(String myImage) {
+        this.myImage = myImage;
     }
 }
 

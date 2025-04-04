@@ -16,11 +16,22 @@ public interface UserDao {
     @Insert
     void insertUser(User user);  // Для додавання користувача
 
-    @Query("SELECT * FROM users")  // Запит для зчитування всіх користувачів
+    @Query("SELECT * FROM users")
+        // Запит для зчитування всіх користувачів
     List<User> getAllUsers();  // Повертає список користувачів
 
-    @Query("SELECT * FROM users WHERE id = :userId")  // Запит для пошуку користувача за ID
+    @Query("SELECT * FROM users WHERE id = :userId")
+        // Запит для пошуку користувача за ID
     User getUserById(int userId);
+
+    // Інші методи...
+
+    @Query("DELETE FROM users")
+    void deleteAllUsers();
+
+    @Query("DELETE FROM sqlite_sequence WHERE name = 'users'")
+    void resetAutoIncrement();
+
 }
 
 
