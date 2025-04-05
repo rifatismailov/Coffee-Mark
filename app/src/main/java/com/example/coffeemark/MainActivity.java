@@ -1,5 +1,7 @@
 package com.example.coffeemark;
 
+import static com.example.coffeemark.util.KeyProvider.loadPublicKey;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,27 +19,21 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.coffeemark.authorization.AuthorizationActivity;
 import com.example.coffeemark.service.ApiHelper;
-import com.example.coffeemark.service.RetrofitClient;
-import com.example.coffeemark.service.ApiService;
-import com.example.coffeemark.service.public_key.PublicKeyRequest;
+
 import com.example.coffeemark.service.public_key.PublicKeyResponse;
-import com.example.coffeemark.service.registration.RegisterRequest;
-import com.example.coffeemark.service.registration.RegisterResponse;
+
 import com.example.coffeemark.user.DatabaseHelper;
 
-import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 
-import javax.crypto.Cipher;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
+
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private  static final String TEST="coffee mark";
 
     private final BroadcastReceiver registrationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -83,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private void getPublicKey(){
 
         ApiHelper.getPublicKey(new ApiHelper.ApiCallback<PublicKeyResponse>() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onSuccess(PublicKeyResponse response) {
                 // Отримуємо публічний ключ
@@ -90,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 // Тепер можна завантажити цей ключ і використовувати для шифрування
                 try {
                     Log.e("MainActivity","Public Key "+publicKeyPem);
-                    //PublicKey publicKey = loadPublicKey(publicKeyPem);
+                    PublicKey publicKey = loadPublicKey(publicKeyPem);
                     // Можеш далі шифрувати дані за допомогою цього ключа
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -105,23 +102,4 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    // Функція для завантаження публічного ключа
-    public PublicKey loadPublicKey(String pem) throws Exception {
-        pem = pem.replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s+", "");
-
-        byte[] decoded = Base64.getDecoder().decode(pem);
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return kf.generatePublic(spec);
-    }
-
-    // Шифрування пароля
-    public byte[] encrypt(String password, PublicKey publicKey) throws Exception {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        return cipher.doFinal(password.getBytes(StandardCharsets.UTF_8));
-    }
 }

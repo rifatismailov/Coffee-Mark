@@ -1,5 +1,7 @@
 package com.example.coffeemark.service;
 
+import com.example.coffeemark.service.authorization.AuthorizationRequest;
+import com.example.coffeemark.service.authorization.AuthorizationResponse;
 import com.example.coffeemark.service.public_key.PublicKeyRequest;
 import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
@@ -15,6 +17,7 @@ public class ApiHelper {
 
     public interface ApiCallback<T> {
         void onSuccess(T response);
+
         void onError(String errorMessage, int code);
     }
 
@@ -43,6 +46,12 @@ public class ApiHelper {
             }
         });
     }
+
+    public static void authorization(AuthorizationRequest request, ApiCallback<AuthorizationResponse> callback) {
+        ApiService api = RetrofitClient.getClient().create(ApiService.class);
+        sendRequest(api.getAuthorization(request), callback);
+    }
+
     public static void register(RegisterRequest request, ApiCallback<RegisterResponse> callback) {
         ApiService api = RetrofitClient.getClient().create(ApiService.class);
         sendRequest(api.registerUser(request), callback);
