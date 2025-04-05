@@ -1,6 +1,8 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -159,7 +161,7 @@
         android:layout_marginBottom="10dp"
         android:text="@string/register"
         android:textColor="@color/white"
-        app:buttonColor="@color/colorBluishGray"
+        app:buttonColor="@color/black"
         app:borderColor="@color/white"
         app:borderWidth="2dp"
         app:buttonRadius="22dp"

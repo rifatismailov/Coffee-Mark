@@ -9,6 +9,7 @@
     <string name="enter_username">Enter username</string>
     <string name="enter_cafe_name">Enter cafe name</string>
     <string name="enter_cafe_address">Enter cafe address</string>
+    <string name="login">login</string>
     <string-array name="user_roles">
         <item>CLIENT</item>
         <item>BARISTA</item>

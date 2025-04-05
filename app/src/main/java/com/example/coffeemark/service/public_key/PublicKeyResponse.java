@@ -1,6 +1,6 @@
-package com.example.coffeemark.registration;
+package com.example.coffeemark.service.public_key;
 
-public class RegisterResponse {
+public class PublicKeyResponse {
     private boolean success;
     private String message;
 
@@ -12,3 +12,4 @@ public class RegisterResponse {
         return message;
     }
 }
+

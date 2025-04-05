@@ -26,17 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.cutimageview.cut_image.CropImageActivity"
-            android:exported="true">
-            <!-- Якщо потрібно, додайте фільтр інтенції -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <activity android:name=".registration.RegisterActivity"/>
-
+        <activity android:name=".authorization.AuthorizationActivity"/>
     </application>
 
 </manifest>

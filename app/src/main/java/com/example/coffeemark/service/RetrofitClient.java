@@ -1,4 +1,4 @@
-package com.example.coffeemark.registration;
+package com.example.coffeemark.service;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

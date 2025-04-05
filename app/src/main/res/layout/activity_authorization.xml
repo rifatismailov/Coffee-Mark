@@ -1,0 +1,101 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+
+    android:layout_height="match_parent">
+    <!-- ScrollView для прокручування -->
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants"
+
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:isScrollContainer="true"
+
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            tools:layout_editor_absoluteY="341dp">
+
+            <com.example.coffeemark.view.CoffeeView
+                android:id="@+id/image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_email"
+                app:boxStrokeColor="@color/colorBluishGray"
+                app:boxStrokeWidthFocused="2dp"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_password"
+                app:boxStrokeColor="@color/colorBluishGray"
+                app:boxStrokeWidthFocused="2dp"
+                app:endIconMode="password_toggle">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- Кнопка Додати кав'ярню -->
+            <com.example.coffeemark.view.CustomButton
+                android:id="@+id/login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/login"
+                android:textColor="@color/white"
+                android:visibility="visible"
+                app:borderColor="@color/white"
+                app:borderWidth="2dp"
+                app:buttonColor="@color/black"
+                app:buttonProgress="false"
+                app:buttonRadius="22dp" />
+
+            <!-- Кнопка Зареєструватися -->
+            <com.example.coffeemark.view.CustomButton
+                android:id="@+id/register_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/register"
+                android:textColor="@color/black"
+                app:borderColor="@color/black"
+                app:borderWidth="2dp"
+                app:buttonColor="@color/white"
+                app:buttonProgress="true"
+                app:buttonRadius="22dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

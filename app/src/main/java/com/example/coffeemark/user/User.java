@@ -1,7 +1,11 @@
 package com.example.coffeemark.user;
 
+import android.util.Log;
+
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import org.json.JSONObject;
 
 @Entity(tableName = "users")
 public class User {
@@ -17,7 +21,7 @@ public class User {
 
 
     // Конструктори, геттери і сеттери
-    public User(String username, String password, String email, String role,String myImage) {
+    public User(String username, String password, String email, String role, String myImage) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -73,6 +77,22 @@ public class User {
 
     public void setMyImage(String myImage) {
         this.myImage = myImage;
+    }
+
+
+    public JSONObject toJson() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("username", username);
+            jsonObject.put("password", password);
+            jsonObject.put("email", email);
+            jsonObject.put("role", role);
+            jsonObject.put("myImage", myImage);
+
+        } catch (Exception e) {
+            Log.e("User", e.toString());
+        }
+        return jsonObject;
     }
 }
 

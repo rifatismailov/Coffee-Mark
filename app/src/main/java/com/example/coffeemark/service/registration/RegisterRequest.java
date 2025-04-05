@@ -1,4 +1,4 @@
-package com.example.coffeemark.registration;
+package com.example.coffeemark.service.registration;
 
 import com.example.coffeemark.registration.cafe.Cafe;
 

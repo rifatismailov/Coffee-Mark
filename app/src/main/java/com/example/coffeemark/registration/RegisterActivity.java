@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.coffeemark.R;
 import com.example.coffeemark.registration.cafe.Cafe;
 import com.example.coffeemark.registration.cafe.CafeAdapter;
+import com.example.coffeemark.service.ApiService;
+import com.example.coffeemark.service.RetrofitClient;
+import com.example.coffeemark.service.registration.RegisterRequest;
+import com.example.coffeemark.service.registration.RegisterResponse;
 import com.example.coffeemark.uploader.Uploader;
 import com.example.coffeemark.util.ImageHandler;
 import com.example.coffeemark.util.UrlBuilder;
@@ -51,9 +56,11 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
     private String image;
     private ImageHandler imageHandler;
 
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);//— це спосіб зробити ваш UI більш адаптивним, гнучким та "повноекранним".
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         dbHelper = new DatabaseHelper(this);
@@ -68,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
         addCafeButton = findViewById(R.id.add_cafe_button);
         registerButton = findViewById(R.id.register_button);
         RecyclerView recyclerView = findViewById(R.id.cafeList);
+
 
         imageHandler = new ImageHandler(this);
         // Ініціалізація списку та адаптера
@@ -99,7 +107,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
             String name = cafeName.getText().toString();
             String address = cafeAddress.getText().toString();
             if (!name.isEmpty() && !address.isEmpty()) {
-                cafeList.add(new Cafe(name, address, image));
+                cafeList.add(new Cafe(name, address, image != null ? image : ""));
                 adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
 
                 cafeName.setText("");
@@ -124,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
         if (isValid) {
             registerButton.onPress("Please wait");
             RegisterRequest request = new RegisterRequest(userName, userPassword, userEmail, role, role.equals("BARISTA") ? cafeList : null,
-                    !image.isEmpty() ? image : "");
+                    image != null ? image : "coffee_mark.png");
 
             apiService.registerUser(request).enqueue(new Callback<RegisterResponse>() {
 
@@ -140,8 +148,9 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
                             if (registerResponse.isSuccess()) {
                                 Toast.makeText(RegisterActivity.this, "Message: " + message, Toast.LENGTH_SHORT).show();
                                 registerButton.stopLoading();
-                                dbHelper.setUser(new User(userName, userPassword, userEmail, role, image));
-
+                                User user = new User(userName, userPassword, userEmail, role, image != null ? image : "");
+                                dbHelper.setUser(user);
+                                addMessageToActivity(user.toJson().toString());
                                 // Зчитуємо всіх користувачів
                                 dbHelper.getAllUsers();
                             } else {
@@ -186,6 +195,15 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
 
     }
 
+    private static final String ACTION_REGISTRATION_MESSAGE = "com.example.COFFEE_MARK";
+    private static final String EXTRA_MESSAGE = "account";
+
+    private void addMessageToActivity(String message) {
+        Intent intent = new Intent(ACTION_REGISTRATION_MESSAGE);
+        intent.putExtra(EXTRA_MESSAGE, message);
+        sendBroadcast(intent);  // Надсилання повідомлення Activity 1
+    }
+
     // Вибір зображення
     private void openGallery() {
         // Потім просто викликаєш:
@@ -221,6 +239,12 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
 
             File savedFile = imageHandler.processAndSaveImage(uri);
             image = imageHandler.getSavedFileName();
+            if (!cafeList.isEmpty()) {
+                for (Cafe cafe : cafeList) {
+                    cafe.setCafe_image(image);
+                }
+                adapter.notifyDataSetChanged(); // Оновлюємо весь список
+            }
             Log.e("RegisterActivity", "Saved to: " + savedFile.getAbsolutePath());
 
             new Uploader(this, serverUrl).uploadFile(savedFile);
