@@ -20,8 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.coffeemark.R;
 import com.example.coffeemark.registration.cafe.Cafe;
 import com.example.coffeemark.registration.cafe.CafeAdapter;
+import com.example.coffeemark.service.ApiHelper;
 import com.example.coffeemark.service.ApiService;
 import com.example.coffeemark.service.RetrofitClient;
+import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
 import com.example.coffeemark.uploader.Uploader;
@@ -31,11 +33,6 @@ import com.example.coffeemark.user.DatabaseHelper;
 import com.example.coffeemark.user.User;
 import com.example.coffeemark.view.CoffeeView;
 import com.example.coffeemark.view.CustomButton;
-
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,63 +128,44 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
 
         if (isValid) {
             registerButton.onPress("Please wait");
-            RegisterRequest request = new RegisterRequest(userName, userPassword, userEmail, role, role.equals("BARISTA") ? cafeList : null,
-                    image != null ? image : "coffee_mark.png");
 
-            apiService.registerUser(request).enqueue(new Callback<RegisterResponse>() {
+            RegisterRequest request = new RegisterRequest.Builder()
+                    .username(userName)
+                    .password(userPassword)
+                    .email(userEmail)
+                    .role(role)
+                    .cafes(role.equals("BARISTA") ? cafeList : null)
+                    .image(image != null ? image : "coffee_mark.png")
+                    .build();
 
+            // Викликаємо метод з ApiHelper
+            ApiHelper.register(request, new ApiHelper.ApiCallback<RegisterResponse>() {
                 @Override
-                public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                    if (response.isSuccessful()) {
-                        if (response.body() != null) {
-                            RegisterResponse registerResponse = response.body();
-                            String message = registerResponse.getMessage();
+                public void onSuccess(RegisterResponse response) {
+                    String message = response.getMessage();
+                    Log.e("RegisterActivity", "Message: " + message);
 
-                            Log.e("RegisterActivity", "Message: " + message);
-
-                            if (registerResponse.isSuccess()) {
-                                Toast.makeText(RegisterActivity.this, "Message: " + message, Toast.LENGTH_SHORT).show();
-                                registerButton.stopLoading();
-                                User user = new User(userName, userPassword, userEmail, role, image != null ? image : "");
-                                dbHelper.setUser(user);
-                                addMessageToActivity(user.toJson().toString());
-                                // Зчитуємо всіх користувачів
-                                dbHelper.getAllUsers();
-                            } else {
-                                Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-
-                                registerButton.stopLoading();
-                            }
-                        } else {
-                            // Якщо тіло відповіді пусте
-                            Log.e("RegisterActivity", "Response body is null");
-                            Toast.makeText(RegisterActivity.this, "Response body is null", Toast.LENGTH_SHORT).show();
-
-                            registerButton.stopLoading();
-
-                        }
-                    } else {
-                        // Якщо статус код не успішний, вивести більше інформації
-                        int statusCode = response.code();
-                        String errorMessage = "Error: " + statusCode + " - " + response.message();
-                        Log.e("RegisterActivity", errorMessage);
-                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    if (response.isSuccess()) {
                         registerButton.stopLoading();
-
+                        registerButton.setMessage(message);
+                        User user = new User(userName, userPassword, userEmail, role, image != null ? image : "");
+                        dbHelper.setUser(user);
+                        addMessageToActivity(user.toJson().toString());
+                        dbHelper.getAllUsers(); // Додатково, якщо потрібно
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "Помилка: " + message, Toast.LENGTH_SHORT).show();
+                        registerButton.stopLoading();
                     }
                 }
 
-
                 @Override
-                public void onFailure(Call<RegisterResponse> call, Throwable t) {
-                    // Тут обробляємо випадки, коли виникає помилка з мережею або запитом
-                    Log.e("RegisterActivity", t.getMessage());
-
-                    Toast.makeText(RegisterActivity.this, "Не вдалося підключитися: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                public void onError(String errorMessage, int code) {
+                    Log.e("RegisterActivity", "Помилка " + code + ": " + errorMessage);
+                    Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                     registerButton.stopLoading();
-
                 }
             });
+
         } else {
             // Поля не заповнені
             Toast.makeText(RegisterActivity.this, "Заповніть буд ласка всі поля", Toast.LENGTH_SHORT).show();

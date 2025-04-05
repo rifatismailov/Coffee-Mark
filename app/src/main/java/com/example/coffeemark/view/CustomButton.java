@@ -69,7 +69,10 @@ public class CustomButton extends AppCompatButton {
         backgroundDrawable.setStroke(borderWidth, borderColor);
         setBackground(backgroundDrawable);
     }
+    public void setMessage(String message){
+        setText(message); // Повертає стандартний текст
 
+    }
     // Метод для натискання кнопки (запускає анімацію)
     public void onPress(String responseMessage) {
         startLoading(responseMessage);
