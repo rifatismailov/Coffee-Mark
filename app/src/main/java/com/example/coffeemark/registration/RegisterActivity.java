@@ -23,7 +23,6 @@ import com.example.coffeemark.registration.cafe.CafeAdapter;
 import com.example.coffeemark.service.ApiHelper;
 import com.example.coffeemark.service.ApiService;
 import com.example.coffeemark.service.RetrofitClient;
-import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
 import com.example.coffeemark.uploader.Uploader;
@@ -124,7 +123,7 @@ public class RegisterActivity extends AppCompatActivity implements Uploader.Oper
         String userPassword = password.getText().toString();
         String userEmail = email.getText().toString();
         String role = roleSpinner.getSelectedItem().toString();
-        boolean isValid = FieldValidator.areFieldsValid(userName, userPassword, userEmail, role);
+        boolean isValid = FieldValidator.areFieldsValidRegistration(userName, userPassword, userEmail, role);
 
         if (isValid) {
             registerButton.onPress("Please wait");

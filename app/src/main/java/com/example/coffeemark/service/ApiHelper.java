@@ -57,9 +57,9 @@ public class ApiHelper {
         sendRequest(api.registerUser(request), callback);
     }
 
-    public static void getPublicKey(ApiCallback<PublicKeyResponse> callback) {
+    public static void getPublicKey(PublicKeyRequest request, ApiCallback<PublicKeyResponse> callback) {
         ApiService api = RetrofitClient.getClient().create(ApiService.class);
-        sendRequest(api.getPublicKey(new PublicKeyRequest("PublicKey")), callback);
+        sendRequest(api.getPublicKey(request), callback);
     }
 }
 
