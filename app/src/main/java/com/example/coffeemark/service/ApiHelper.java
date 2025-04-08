@@ -2,6 +2,8 @@ package com.example.coffeemark.service;
 
 import com.example.coffeemark.service.authorization.AuthorizationRequest;
 import com.example.coffeemark.service.authorization.AuthorizationResponse;
+import com.example.coffeemark.service.public_key.LocalPublicKeyRequest;
+import com.example.coffeemark.service.public_key.LocalPublicKeyResponse;
 import com.example.coffeemark.service.public_key.PublicKeyRequest;
 import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
@@ -60,6 +62,11 @@ public class ApiHelper {
     public static void getPublicKey(PublicKeyRequest request, ApiCallback<PublicKeyResponse> callback) {
         ApiService api = RetrofitClient.getClient().create(ApiService.class);
         sendRequest(api.getPublicKey(request), callback);
+    }
+
+    public static void setLocalPublicKey(LocalPublicKeyRequest request, ApiCallback<LocalPublicKeyResponse> callback) {
+        ApiService api = RetrofitClient.getClient().create(ApiService.class);
+        sendRequest(api.setLocalPublicKey(request), callback);
     }
 }
 

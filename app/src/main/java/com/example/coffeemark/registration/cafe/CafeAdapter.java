@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffeemark.R;
-import com.example.coffeemark.util.ImageHandler;
+import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CoffeeView;
 
 import java.io.File;

@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".registration.RegisterActivity"/>
+        <activity android:name=".registration.RegistrationActivity"/>
         <activity android:name=".authorization.AuthorizationActivity"/>
     </application>
 

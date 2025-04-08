@@ -45,6 +45,8 @@ dependencies {
     implementation libs.room.runtime
     annotationProcessor libs.room.compiler
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation "androidx.security:security-crypto:1.1.0-alpha06"
+
 
 
 }

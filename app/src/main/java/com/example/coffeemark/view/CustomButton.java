@@ -69,10 +69,12 @@ public class CustomButton extends AppCompatButton {
         backgroundDrawable.setStroke(borderWidth, borderColor);
         setBackground(backgroundDrawable);
     }
-    public void setMessage(String message){
+
+    public void setMessage(String message) {
         setText(message); // Повертає стандартний текст
 
     }
+
     // Метод для натискання кнопки (запускає анімацію)
     public void onPress(String responseMessage) {
         startLoading(responseMessage);
@@ -80,10 +82,13 @@ public class CustomButton extends AppCompatButton {
 
     // Запускає анімацію трьох крапок
     private void startLoading(String text) {
+        stopLoading();
         message = text;
         isAnimating = true;
         dotCount = 0;
-        if (buttonProgress) handler.postDelayed(loadingRunnable, 500);
+        if (buttonProgress) {
+            handler.postDelayed(loadingRunnable, 500);
+        }
     }
 
     // Зупиняє анімацію

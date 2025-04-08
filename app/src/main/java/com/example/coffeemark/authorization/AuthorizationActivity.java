@@ -1,12 +1,15 @@
 package com.example.coffeemark.authorization;
 
-import static com.example.coffeemark.util.KeyProvider.loadPublicKey;
+import static com.example.coffeemark.account.AccountManager.saveAccount;
+import static com.example.coffeemark.util.KeyUntil.getPublicKeyHash;
+import static com.example.coffeemark.util.KeyUntil.loadPrivateKey;
+import static com.example.coffeemark.util.KeyUntil.loadPublicKey;
+import static com.example.coffeemark.util.KeyUntil.publicKeyToString;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,97 +18,236 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.coffeemark.R;
+import com.example.coffeemark.account.Account;
+import com.example.coffeemark.account.AccountManager;
+import com.example.coffeemark.dialog.AuthorizationDialog;
+import com.example.coffeemark.dialog.ErrorDialog;
+import com.example.coffeemark.dialog.StatusHandler;
 import com.example.coffeemark.registration.FieldValidator;
-import com.example.coffeemark.registration.RegisterActivity;
-import com.example.coffeemark.service.ApiHelper;
+import com.example.coffeemark.registration.RegistrationActivity;
+import com.example.coffeemark.service.Manager;
 import com.example.coffeemark.service.authorization.AuthorizationRequest;
-import com.example.coffeemark.service.authorization.AuthorizationResponse;
-import com.example.coffeemark.service.registration.RegisterRequest;
-import com.example.coffeemark.service.registration.RegisterResponse;
-import com.example.coffeemark.user.User;
+import com.example.coffeemark.service.public_key.LocalPublicKeyRequest;
+import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
+import com.example.coffeemark.util.LocalErrorResponse;
+import com.example.coffeemark.view.CoffeeView;
+import com.example.coffeemark.view.CustomButton;
 
+import org.json.JSONObject;
+
+import java.io.File;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
-public class AuthorizationActivity extends AppCompatActivity {
-    private EditText email, password;
-    private Button login, registration;
+/**
+ * Клас {@code AuthorizationActivity} відповідає за авторизацію користувача.
+ * Він дозволяє користувачам ввести свої облікові дані, перевіряє введену інформацію,
+ * шифрує дані та надсилає запит на сервер для перевірки облікових даних користувача.
+ *
+ * <p>Після отримання відповіді від сервера, клас обробляє результат та відображає
+ * відповідне повідомлення користувачу. Якщо авторизація успішна, користувач перенаправляється
+ * на головний екран програми.</p>
+ *
+ * <p>Реалізує інтерфейси:
+ * <ul>
+ *   <li>{@link Manager.MessageAuthorization} — для отримання результату авторизації</li>
+ *   <li>{@link AuthorizationDialog.Authorization} — для подальшої обробки після успішної авторизації</li>
+ * </ul>
+ * </p>
+ *
+ * @author Ріфат Ісмаїлов
+ */
 
+public class AuthorizationActivity extends AppCompatActivity implements Manager.MessageAuthorization, AuthorizationDialog.Authorization {
+
+    private EditText email, password;
+    private CustomButton login, registration;
+    private AuthorizationRequest request;
+    private CoffeeView coffeeView;
+    private String userPassword;
+    private String userEmail;
+    private PublicKey localPublicKey ;
+    private PrivateKey privateKey;
+
+
+    /**
+     * Відкриває активність реєстрації нового користувача.
+     */
     public void startRegistration() {
-        // Запуск сервісу
-        Intent serviceIntent = new Intent(this, RegisterActivity.class);
+        Intent serviceIntent = new Intent(this, RegistrationActivity.class);
         startActivity(serviceIntent);
     }
 
+    /**
+     * Метод викликається при створенні активності.
+     * Ініціалізує компоненти інтерфейсу, завантажує публічний ключ, встановлює обробники кнопок.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_authorization);
+
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         login = findViewById(R.id.login_button);
         registration = findViewById(R.id.register_button);
+        coffeeView = findViewById(R.id.image_view);
+        coffeeView.setImageResource(R.drawable.emoticon_shame_smiley); // Іконка з емоцією
+        localPublicKey = loadPublicKey(this, "user_public.pem");
+        privateKey = loadPrivateKey(this, "user_private.pem");
         try {
-            PublicKey publicKey = loadPublicKey(this);
+            PublicKey publicKey = loadPublicKey(this, "public.pem");
+
+            // Клік по кнопці входу
             login.setOnClickListener(view -> {
                 registerUser(publicKey);
             });
+
+            // Клік по кнопці реєстрації
             registration.setOnClickListener(view -> startRegistration());
+
         } catch (Exception e) {
             Log.e("AuthorizationActivity", "Не вдалося завантажити публічний ключ", e);
-            Toast.makeText(this, "Помилка: неможливо авторизуватися. Спробуйте пізніше.", Toast.LENGTH_LONG).show();
 
-            // Деактивуємо кнопки
+            // Відображення помилки у вікні
+            new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder()
+                    .status("1006")
+                    .message("Неможливо авторизуватися. Спробуйте пізніше.")
+                    .build()).show();
+
             login.setEnabled(false);
             registration.setEnabled(false);
         }
     }
 
+    /**
+     * Створює об'єкт запиту авторизації, шифрує email і пароль користувача.
+     * Валідує введені поля та надсилає дані через Manager.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void registerUser(PublicKey publicKey) {
-
-        String userPassword = password.getText().toString();
-        String userEmail = email.getText().toString();
+        userPassword = password.getText().toString();
+        userEmail = email.getText().toString();
         boolean isValid = FieldValidator.areFieldsValidAuthorization(userEmail, userPassword);
 
         if (isValid) {
             try {
-                AuthorizationRequest request = new AuthorizationRequest.Builder()
+                login.onPress("LOGIN");
+                request = new AuthorizationRequest.Builder()
                         .email(Encryptor.encryptText(userEmail, publicKey))
                         .password(Encryptor.encryptText(userPassword, publicKey))
+                        .hash_user_public(getPublicKeyHash(localPublicKey))
                         .build();
-                // Викликаємо метод з ApiHelper
-                ApiHelper.authorization(request, new ApiHelper.ApiCallback<AuthorizationResponse>() {
-                    @Override
-                    public void onSuccess(AuthorizationResponse response) {
 
-                        String message = response.getMessage();
-                        if (response.isSuccess()) {
-                            Log.e("AuthorizationActivity", "Message: " + message);
+                Manager.authorization(this, request);
 
-                        } else {
-                            Toast.makeText(AuthorizationActivity.this, "Помилка: " + message, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onError(String errorMessage, int code) {
-                        Log.e("RegisterActivity", "Помилка " + code + ": " + errorMessage);
-                        Toast.makeText(AuthorizationActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                    }
-                });
             } catch (Exception e) {
-                Toast.makeText(AuthorizationActivity.this, "Помилка під час шифрування", Toast.LENGTH_SHORT).show();
-                Log.e("AuthorizationActivity", "Помилка під час шифрування " + e);
+                new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder()
+                        .status("1013")
+                        .message("Помилка під час шифрування.")
+                        .build()).show();
 
+                Log.e("AuthorizationActivity", "Помилка під час шифрування " + e);
             }
 
         } else {
-            // Поля не заповнені
-            Toast.makeText(AuthorizationActivity.this, "Заповніть буд ласка всі поля", Toast.LENGTH_SHORT).show();
+            new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder()
+                    .status("0000")
+                    .message("Заповніть будь ласка всі поля.")
+                    .build()).show();
         }
+    }
 
+    /**
+     * Метод викликається у разі успішної авторизації.
+     * Дешифрує дані, створює об'єкт облікового запису, зберігає його.
+     */
+    @Override
+    public void onSuccess(String message) {
+        try {
+            JSONObject jsonObject = new JSONObject(message);
+            Respond respond = new Respond(jsonObject);
+
+            coffeeView.setImageResource(R.drawable.emoticon_happy);
+
+            String username = Decryptor.decryptText(respond.getUsername(), privateKey);
+            String password = Decryptor.decryptText(respond.getPassword(), privateKey);
+            String email = Decryptor.decryptText(respond.getEmail(), privateKey);
+            String role = respond.getRole();
+            String image = Decryptor.decryptText(respond.getImage(), privateKey);
+
+            if (userPassword.equals(password) && userEmail.equals(email)) {
+                Account account = new Account.Builder()
+                        .username(Encryptor.encryptText(username, localPublicKey))
+                        .password(Encryptor.encryptText(userPassword, localPublicKey))
+                        .email(Encryptor.encryptText(userEmail, localPublicKey))
+                        .role(role)
+                        .image(image)
+                        .build();
+
+                saveAccount(this, account);
+                new AuthorizationDialog(this, "Authorization" ," авторизація пройшла успішно!").show();
+            }
+            login.stopLoading();
+
+        } catch (Exception e) {
+            Log.e("AuthorizationActivity", "Помилка під час обробки даних з json " + e);
+        }
+        login.stopLoading();
+    }
+
+    /**
+     * Метод викликається у разі помилки авторизації.
+     * Витягує статус і повідомлення, відображає їх користувачу.
+     */
+    @Override
+    public void onError(String message) {
+        try {
+            LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
+            new ErrorDialog(this, "Authorization", localErrorResponse).show();
+
+            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())) {
+                Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
+            }
+
+            StatusHandler.handleStatus(localErrorResponse.getStatus(), coffeeView);
+        } catch (Exception e) {
+            Log.e("AuthorizationActivity", "Помилка під час обробки помилки " + e);
+        }
+        login.stopLoading();
+    }
+
+    /**
+     * Отримує локальний публічний ключ користувача у вигляді рядка.
+     */
+    @Override
+    public String getLocalPublicKey() {
+        return publicKeyToString(localPublicKey);
+    }
+
+    /**
+     * Метод викликається після підтвердження авторизації.
+     * Надсилає широкомовне повідомлення.
+     */
+    @Override
+    public void continueNext() {
+        messageToActivity("Authorization");
+        finish();
+    }
+
+    // Константи для широкомовного повідомлення
+    private static final String ACTION_REGISTRATION_MESSAGE = "com.example.COFFEE_MARK";
+    private static final String EXTRA_MESSAGE = "account";
+
+    /**
+     * Надсилає широкомовне повідомлення до інших активностей або компонентів програми.
+     */
+    public void messageToActivity(String message) {
+        Intent intent = new Intent(ACTION_REGISTRATION_MESSAGE);
+        intent.putExtra(EXTRA_MESSAGE, message);
+        sendBroadcast(intent);
     }
 }

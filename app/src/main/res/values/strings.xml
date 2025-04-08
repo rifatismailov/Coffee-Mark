@@ -2,6 +2,7 @@
     <string name="app_name">Coffee Mark</string>
     <string name="add_a_coffee_shop">Add a coffee shop</string>
     <string name="register">Register</string>
+    <string name="close">Close</string>
     <string name="coffee_shop_address">Coffee shop address</string>
     <string name="name_of_the_coffee_shop">Name of the coffee shop</string>
     <string name="enter_email">Enter Email</string>

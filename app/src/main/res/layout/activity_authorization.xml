@@ -78,7 +78,7 @@
                 app:borderColor="@color/white"
                 app:borderWidth="2dp"
                 app:buttonColor="@color/black"
-                app:buttonProgress="false"
+                app:buttonProgress="true"
                 app:buttonRadius="22dp" />
 
             <!-- Кнопка Зареєструватися -->

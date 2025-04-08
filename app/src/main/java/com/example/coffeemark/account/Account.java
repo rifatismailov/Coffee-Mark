@@ -1,10 +1,11 @@
-package com.example.coffeemark.service.registration;
+package com.example.coffeemark.account;
 
 import com.example.coffeemark.registration.cafe.Cafe;
+import com.example.coffeemark.service.registration.RegisterRequest;
 
 import java.util.List;
 
-public class RegisterRequest {
+public class Account {
     private final String username;
     private final String password;
     private final String email;
@@ -12,7 +13,7 @@ public class RegisterRequest {
     private final List<Cafe> cafes;
     private final String image;
     private final String public_key;
-    private RegisterRequest(Builder builder) {
+    private Account(Builder builder) {
         this.username = builder.username;
         this.password = builder.password;
         this.email = builder.email;
@@ -93,9 +94,8 @@ public class RegisterRequest {
             return this;
         }
 
-        public RegisterRequest build() {
-            return new RegisterRequest(this);
+        public Account build() {
+            return new Account(this);
         }
     }
 }
-

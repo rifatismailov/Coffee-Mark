@@ -24,6 +24,7 @@
     <color name="custom_background_dark">#121212</color> <!-- Фон для темної теми -->
     <color name="custom_text_dark">#FFFFFF</color> <!-- Текст для темної теми -->
     <color name="black">#FF000000</color>
+    <color name="read">#FF5555</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>

@@ -1,4 +1,4 @@
-package com.example.coffeemark.util;
+package com.example.coffeemark.util.image;
 
 import android.graphics.Bitmap;
 
