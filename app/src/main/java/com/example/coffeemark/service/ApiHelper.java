@@ -8,8 +8,8 @@ import com.example.coffeemark.service.public_key.PublicKeyRequest;
 import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
-import com.example.coffeemark.uploader.progress.ProgressRequestBody;
-import com.example.coffeemark.uploader.progress.ProgressResponseBody;
+import com.example.coffeemark.progress.ProgressRequestBody;
+import com.example.coffeemark.progress.ProgressResponseBody;
 
 import java.io.File;
 import java.io.FileOutputStream;

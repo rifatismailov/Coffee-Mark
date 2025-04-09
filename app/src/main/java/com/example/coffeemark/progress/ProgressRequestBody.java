@@ -1,4 +1,4 @@
-package com.example.coffeemark.uploader.progress;
+package com.example.coffeemark.progress;
 
 import androidx.annotation.NonNull;
 
