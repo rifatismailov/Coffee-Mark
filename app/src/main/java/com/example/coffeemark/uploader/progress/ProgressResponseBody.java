@@ -89,11 +89,6 @@ public class ProgressResponseBody extends ResponseBody {
                 // Обчислення прогресу
                 int progress = (int) ((totalBytesRead * 100) / contentLength);
                 listener.onProgressUpdate(progress);
-
-                // Завершення завантаження
-                if (bytesRead == -1) {
-                    listener.onFinish();
-                }
                 return bytesRead;
             }
         };
@@ -115,9 +110,6 @@ public class ProgressResponseBody extends ResponseBody {
          */
         void onError(String e);
 
-        /**
-         * Викликається після успішного завершення завантаження файлу.
-         */
-        void onFinish();
+
     }
 }

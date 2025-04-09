@@ -2,6 +2,7 @@ package com.example.coffeemark.dialog;
 
 import static com.example.coffeemark.util.KeyUntil.loadPrivateKey;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.example.coffeemark.R;
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.util.Decryptor;
+import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CoffeeView;
 
 import java.security.PrivateKey;
@@ -62,6 +64,7 @@ public class AuthorizationDialog extends Dialog {
      *
      * @param savedInstanceState збережений стан діалогу, використовується для відновлення попередніх налаштувань.
      */
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +92,12 @@ public class AuthorizationDialog extends Dialog {
             String email = Decryptor.decryptText(AccountManager.getEmail(getContext()), privateKey);
             titleText.setText(email);
             messageText.setText(username + message);
-            coffeeView.setImageResource(R.drawable.emoticon_glas_smiley);
+            if (!"coffee_mark.png".equals(AccountManager.getImage(getContext()))) {
+                ImageHandler imageHandler = new ImageHandler(getContext());
+                coffeeView.setImageBitmap(imageHandler.getBitmap(imageHandler.getDirFile(AccountManager.getImage(getContext()))));
+            } else {
+                coffeeView.setImageResource(R.drawable.emoticon_glas_smiley);
+            }
             dismissBtn.setText("Продовжити");
         } catch (Exception e) {
             Log.e("AuthorizationDialog", e.toString());

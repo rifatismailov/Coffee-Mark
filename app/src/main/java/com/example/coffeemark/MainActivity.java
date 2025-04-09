@@ -57,7 +57,25 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                if ("Registration".equals(message)) {
+                    try {
+                        PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
 
+                        String username = Decryptor.decryptText(AccountManager.getUsername(getBaseContext()), privateKey);
+                        String password = Decryptor.decryptText(AccountManager.getPassword(getBaseContext()), privateKey);
+                        String email = Decryptor.decryptText(AccountManager.getEmail(getBaseContext()), privateKey);
+
+                        Log.e("MainActivity",
+                                username + " "
+                                        + password + " "
+                                        + email + " "
+                                        + AccountManager.getRole(getBaseContext()) + " "
+                                        + AccountManager.getImage(getBaseContext()));
+                    } catch (Exception e) {
+                        Log.e("MainActivity", e.toString());
+                    }
+
+                }
             }
         }
     };

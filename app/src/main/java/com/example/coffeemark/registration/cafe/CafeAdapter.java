@@ -43,9 +43,9 @@ public class CafeAdapter extends RecyclerView.Adapter<CafeAdapter.ViewHolder> {
         holder.cafeAddress.setText(cafe.getAddress());
         try {
             if (!cafe.getCafe_image().isEmpty()) {
-                File imageFile = new File(imageHandler.getSaveDir(), cafe.getCafe_image());
-                Uri uri = Uri.fromFile(imageFile); // Правильне створення Uri для локального файла
-                holder.cafe_image.setImageBitmap(imageHandler.getBitmap(uri));
+                holder.cafe_image.setImageBitmap(
+                        imageHandler.getBitmap(imageHandler.getDirFile(cafe.getCafe_image()))
+                );
             }
         } catch (IOException e) {
             Log.e("CafeAdapter", e.toString());

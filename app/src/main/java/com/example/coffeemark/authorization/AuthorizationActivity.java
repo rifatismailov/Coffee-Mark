@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
@@ -19,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.coffeemark.R;
 import com.example.coffeemark.account.Account;
-import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.dialog.AuthorizationDialog;
 import com.example.coffeemark.dialog.ErrorDialog;
 import com.example.coffeemark.dialog.StatusHandler;
@@ -31,12 +29,12 @@ import com.example.coffeemark.service.public_key.LocalPublicKeyRequest;
 import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
 import com.example.coffeemark.util.LocalErrorResponse;
+import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CoffeeView;
 import com.example.coffeemark.view.CustomButton;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -59,7 +57,7 @@ import java.security.PublicKey;
  * @author Ріфат Ісмаїлов
  */
 
-public class AuthorizationActivity extends AppCompatActivity implements Manager.MessageAuthorization, AuthorizationDialog.Authorization {
+public class AuthorizationActivity extends AppCompatActivity implements Manager.MessageAuthorization, AuthorizationDialog.Authorization, Manager.FileTransferCallback {
 
     private EditText email, password;
     private CustomButton login, registration;
@@ -67,9 +65,9 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
     private CoffeeView coffeeView;
     private String userPassword;
     private String userEmail;
-    private PublicKey localPublicKey ;
-    private PrivateKey privateKey;
-
+    private PublicKey localPublicKey;
+    private PrivateKey localPrivateKey;
+    private Account account;
 
     /**
      * Відкриває активність реєстрації нового користувача.
@@ -77,6 +75,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
     public void startRegistration() {
         Intent serviceIntent = new Intent(this, RegistrationActivity.class);
         startActivity(serviceIntent);
+        finish();
     }
 
     /**
@@ -97,7 +96,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
         coffeeView = findViewById(R.id.image_view);
         coffeeView.setImageResource(R.drawable.emoticon_shame_smiley); // Іконка з емоцією
         localPublicKey = loadPublicKey(this, "user_public.pem");
-        privateKey = loadPrivateKey(this, "user_private.pem");
+        localPrivateKey = loadPrivateKey(this, "user_private.pem");
         try {
             PublicKey publicKey = loadPublicKey(this, "public.pem");
 
@@ -165,6 +164,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
      * Метод викликається у разі успішної авторизації.
      * Дешифрує дані, створює об'єкт облікового запису, зберігає його.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onSuccess(String message) {
         try {
@@ -173,14 +173,14 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
 
             coffeeView.setImageResource(R.drawable.emoticon_happy);
 
-            String username = Decryptor.decryptText(respond.getUsername(), privateKey);
-            String password = Decryptor.decryptText(respond.getPassword(), privateKey);
-            String email = Decryptor.decryptText(respond.getEmail(), privateKey);
+            String username = Decryptor.decryptText(respond.getUsername(), localPrivateKey);
+            String password = Decryptor.decryptText(respond.getPassword(), localPrivateKey);
+            String email = Decryptor.decryptText(respond.getEmail(), localPrivateKey);
             String role = respond.getRole();
-            String image = Decryptor.decryptText(respond.getImage(), privateKey);
+            String image = Decryptor.decryptText(respond.getImage(), localPrivateKey);
 
             if (userPassword.equals(password) && userEmail.equals(email)) {
-                Account account = new Account.Builder()
+                account = new Account.Builder()
                         .username(Encryptor.encryptText(username, localPublicKey))
                         .password(Encryptor.encryptText(userPassword, localPublicKey))
                         .email(Encryptor.encryptText(userEmail, localPublicKey))
@@ -189,7 +189,12 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
                         .build();
 
                 saveAccount(this, account);
-                new AuthorizationDialog(this, "Authorization" ," авторизація пройшла успішно!").show();
+
+                if (!"coffee_mark.png".equals(account.getImage())) {
+                    Manager.downloadFile(this,image,new ImageHandler(this).getDirFile(image));
+                } else {
+                    new AuthorizationDialog(this, "Authorization", " авторизація пройшла успішно!").show();
+                }
             }
             login.stopLoading();
 
@@ -204,7 +209,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
      * Витягує статус і повідомлення, відображає їх користувачу.
      */
     @Override
-    public void onError(String message) {
+    public void onFileError(String message) {
         try {
             LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
             new ErrorDialog(this, "Authorization", localErrorResponse).show();
@@ -250,4 +255,29 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
         intent.putExtra(EXTRA_MESSAGE, message);
         sendBroadcast(intent);
     }
+
+    @Override
+    public void onProgress(int progress) {
+        coffeeView.setProgress(progress);
+    }
+
+    @Override
+    public void onError(String e) {
+        Log.e("AuthorizationActivity", e);
+
+    }
+
+
+    @Override
+    public void onFinish() {
+        Log.e("AuthorizationActivity", "onFinish");
+        try {
+            ImageHandler imageHandler = new ImageHandler(this);
+            coffeeView.setImageBitmap(imageHandler.getBitmap(imageHandler.getDirFile(account.getImage())));
+        } catch (Exception e) {
+            Log.e("AuthorizationActivity", e.toString());
+        }
+        new AuthorizationDialog(this, "Authorization", " авторизація пройшла успішно!").show();
+    }
+
 }

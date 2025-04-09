@@ -1,5 +1,7 @@
 package com.example.coffeemark.uploader.progress;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -52,7 +54,7 @@ public class ProgressRequestBody extends RequestBody {
      * @throws IOException У разі проблем з отриманням довжини файлу.
      */
     @Override
-    public long contentLength() throws IOException {
+    public long contentLength(){
         return file.length();
     }
 
@@ -63,7 +65,7 @@ public class ProgressRequestBody extends RequestBody {
      * @throws IOException У разі помилки вводу/виводу.
      */
     @Override
-    public void writeTo(BufferedSink sink) {
+    public void writeTo(@NonNull BufferedSink sink) {
         try {
             Source source = Okio.source(file);
             long totalBytesRead = 0;
@@ -80,9 +82,6 @@ public class ProgressRequestBody extends RequestBody {
                 int progress = (int) ((totalBytesRead * 100) / fileSize);
                 listener.onProgressUpdate(progress);
             }
-
-            // Завершення завантаження
-            listener.onFinish();
         } catch (Exception e) {
             listener.onError(e.getMessage());
         }
@@ -104,10 +103,5 @@ public class ProgressRequestBody extends RequestBody {
          * Викликається у разі помилки під час завантаження файлу.
          */
         void onError(String e);
-
-        /**
-         * Викликається після успішного завершення завантаження файлу.
-         */
-        void onFinish();
     }
 }

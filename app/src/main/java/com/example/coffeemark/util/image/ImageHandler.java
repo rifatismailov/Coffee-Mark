@@ -38,8 +38,17 @@ public class ImageHandler {
         return MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
     }
 
+    public Bitmap getBitmap(File file) throws IOException {
+        Uri uri = Uri.fromFile(file);
+        return MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+    }
+
     public File getSaveDir() {
         return saveDir;
+    }
+
+    public File getDirFile(String savedFileName) {
+        return new File(saveDir, savedFileName);
     }
 }
 
