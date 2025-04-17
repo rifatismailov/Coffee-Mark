@@ -4,29 +4,57 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffeemark.R;
+import com.example.coffeemark.registration.cafe.binder.CafeCartBinder;
+import com.example.coffeemark.registration.cafe.binder.CafeShopBinder;
 import com.example.coffeemark.registration.cafe.holder.CafeCartViewHolder;
 import com.example.coffeemark.registration.cafe.holder.CafeShopViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
-import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 
+/**
+ * Адаптер для RecyclerView, який відображає список об'єктів {@link CafeBase},
+ * включаючи {@link CafeCart} і {@link CafeShop}.
+ * Для кожного типу використовується свій ViewHolder та логіка прив'язки через відповідний Binder.
+ */
 public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    // Типи елементів, які відображаються в списку
     private static final int TYPE_CART = 1;
     private static final int TYPE_SHOP = 2;
 
-    private List<CafeBase> items;
+    // Об'єкти Binder'ів для різних типів ViewHolder'ів
+    private final CafeCartBinder cartBinder = new CafeCartBinder();
+    private final CafeShopBinder shopBinder = new CafeShopBinder();
+
+    // Список елементів для відображення
+    private final List<CafeBase> items;
+
+    // Обробник зображень, використовується для завантаження локальних фото
     public ImageHandler imageHandler;
 
+    /**
+     * Конструктор адаптера.
+     *
+     * @param items        список елементів {@link CafeBase}, які буде відображено
+     * @param imageHandler об'єкт для завантаження зображень
+     */
     public CafeAdapter(List<CafeBase> items, ImageHandler imageHandler) {
         this.items = items;
         this.imageHandler = imageHandler;
     }
 
+    /**
+     * Визначає тип View для конкретної позиції списку.
+     *
+     * @param position позиція елемента у списку
+     * @return {@link #TYPE_CART} якщо це {@link CafeCart}, {@link #TYPE_SHOP} якщо {@link CafeShop}
+     */
     @Override
     public int getItemViewType(int position) {
         CafeBase item = items.get(position);
@@ -35,6 +63,13 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         else throw new IllegalStateException("Unknown CafeBase type at position: " + position);
     }
 
+    /**
+     * Створює відповідний ViewHolder залежно від типу елемента.
+     *
+     * @param parent   ViewGroup, до якого буде додано View
+     * @param viewType тип елемента (отриманий через {@link #getItemViewType(int)})
+     * @return новий ViewHolder для відповідного типу
+     */
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,56 +83,39 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    /**
+     * Прив'язує дані до відповідного ViewHolder'а, використовуючи відповідний Binder.
+     *
+     * @param holder   ViewHolder, до якого треба прив'язати дані
+     * @param position позиція елемента у списку
+     */
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         CafeBase item = items.get(position);
 
         if (holder instanceof CafeCartViewHolder && item instanceof CafeCart) {
-            CafeCart cart = (CafeCart) item;
-            CafeCartViewHolder cartHolder = (CafeCartViewHolder) holder;
-            cartHolder.cafeName.setText(cart.getName());
-            cartHolder.cafeAddress.setText(cart.getAddress());
-
-            List<Integer> colors = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                if (i < cart.getAmount_of_coffee()) colors.add(0xFF8F6E4F);
-                else colors.add(0xFFFFFFFF);
-            }
-            cartHolder.colorBallsView.setBallColors(colors);
-
-            try {
-                if (!cart.getCafeImage().isEmpty()) {
-                    cartHolder.cafe_image.setImageBitmap(
-                            imageHandler.getBitmap(imageHandler.getDirFile(cart.getCafeImage()))
-                    );
-                }
-            } catch (IOException e) {
-                Log.e("CafeAdapter", e.toString());
-            }
+            cartBinder.bind((CafeCartViewHolder) holder, (CafeCart) item, imageHandler);
 
         } else if (holder instanceof CafeShopViewHolder && item instanceof CafeShop) {
-            CafeShop shop = (CafeShop) item;
-            CafeShopViewHolder shopHolder = (CafeShopViewHolder) holder;
-            shopHolder.cafeName.setText(shop.getName());
-            shopHolder.cafeAddress.setText(shop.getAddress());
-
-            try {
-                if (!shop.getCafeImage().isEmpty()) {
-                    shopHolder.cafe_image.setImageBitmap(
-                            imageHandler.getBitmap(imageHandler.getDirFile(shop.getCafeImage()))
-                    );
-                }
-            } catch (IOException e) {
-                Log.e("CafeAdapter", e.toString());
-            }
+            shopBinder.bind((CafeShopViewHolder) holder, (CafeShop) item, imageHandler);
         }
     }
 
+    /**
+     * Повертає загальну кількість елементів у списку.
+     *
+     * @return кількість елементів
+     */
     @Override
     public int getItemCount() {
         return items.size();
     }
 
+    /**
+     * Додає новий елемент у список і повідомляє RecyclerView про зміну.
+     *
+     * @param cafe новий елемент типу {@link CafeBase}
+     */
     public void addItem(CafeBase cafe) {
         items.add(cafe);
         notifyItemInserted(items.size() - 1);
