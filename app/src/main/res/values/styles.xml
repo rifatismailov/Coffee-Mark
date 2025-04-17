@@ -14,6 +14,6 @@
         <!-- Колір фону -->
         <item name="android:background">@color/custom_spinner_background</item>
         <!-- Колір тексту -->
-        <item name="android:textColor">@color/custom_spinner_text</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 </resources>

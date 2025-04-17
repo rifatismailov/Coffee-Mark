@@ -9,5 +9,8 @@
         <attr name="buttonProgress" format="boolean"/>
 
     </declare-styleable>
+    <declare-styleable name="CoffeeView">
+        <attr name="outerBackgroundColor" format="color" />
+    </declare-styleable>
 
 </resources>

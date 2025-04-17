@@ -15,18 +15,23 @@ import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
+import com.example.coffeemark.registration.cafe.CafeBase;
+import com.example.coffeemark.registration.cafe.CafeAdapter;
+import com.example.coffeemark.registration.cafe.CafeCart;
 import com.example.coffeemark.user.DatabaseHelper;
 import com.example.coffeemark.util.Decryptor;
+import com.example.coffeemark.util.image.ImageHandler;
 
 import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -92,24 +97,43 @@ public class MainActivity extends AppCompatActivity {
         startActivity(serviceIntent);
     }
 
+    /**
+     * Список кавʼярень, які додає користувач.
+     */
+    private final List<CafeBase> cafeList = new ArrayList<>();
+
+    /**
+     * Адаптер для відображення списку кавʼярень.
+     */
+    private CafeAdapter adapter;
+
+    private ImageHandler imageHandler;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        RecyclerView recyclerView = findViewById(R.id.mainCafeList);
+
+        // Ініціалізація RecyclerView для кавʼярень
+        imageHandler = new ImageHandler(this);
+        adapter = new CafeAdapter(cafeList, imageHandler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
         checkLocalKey(this);
         checkPublicKey(this);
 
         new DatabaseHelper(this).deleteAllUsers();
-        registerRegistrationActivity();
-        startRegistration();
+        //registerRegistrationActivity();
+        //startRegistration();
+        for (int i = 0; i < 10; i++) {
+            cafeList.add(new CafeCart("name cafe "+i, "address cafe "+i, "coffee_mark.png",4));
+            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
+        }
+
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
 

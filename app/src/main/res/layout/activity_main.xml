@@ -1,19 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mainCafeList"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLayout"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:descendantFocusability="beforeDescendants"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:isScrollContainer="true"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <EditText
+            android:id="@+id/messageBox"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10sp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:fastScrollEnabled="true"
+            android:fillViewport="true"
+            android:hint="@string/type_a_search"
+            android:inputType="textMultiLine"
+            android:maxHeight="100sp"
+            android:padding="8sp"
+            android:scrollbars="vertical"
+            android:scrollHorizontally="true"
+            android:singleLine="false"
+            android:textColor="#191919"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:typeface="monospace" />
+
+        <!-- Кнопка Додати кав'ярню -->
+        <com.example.coffeemark.view.CustomButton
+            android:id="@+id/request_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/search"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:visibility="visible"
+            app:borderColor="@color/white"
+            app:borderWidth="2dp"
+            app:buttonColor="@color/deep_slate"
+            app:buttonProgress="true"
+            app:buttonRadius="22dp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

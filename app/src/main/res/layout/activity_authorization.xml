@@ -2,17 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:fitsSystemWindows="true"
+    android:layout_height="match_parent"
 
-    android:layout_height="match_parent">
+    android:fitsSystemWindows="true">
     <!-- ScrollView для прокручування -->
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:descendantFocusability="beforeDescendants"
 
 
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,18 +21,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:isScrollContainer="true"
+            android:layout_gravity="center"
 
             android:gravity="center"
+            android:isScrollContainer="true"
             android:orientation="vertical"
-            android:layout_gravity="center"
             android:padding="16dp"
             tools:layout_editor_absoluteY="341dp">
 
             <com.example.coffeemark.view.CoffeeView
                 android:id="@+id/image_view"
                 android:layout_width="100dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                app:outerBackgroundColor="@color/white"
+                />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

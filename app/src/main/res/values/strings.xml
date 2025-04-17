@@ -11,6 +11,10 @@
     <string name="enter_cafe_name">Enter cafe name</string>
     <string name="enter_cafe_address">Enter cafe address</string>
     <string name="login">login</string>
+    <string name="type_a_request">type a request</string>
+    <string name="request">request</string>
+    <string name="type_a_search">type a search</string>
+    <string name="search">search</string>
     <string-array name="user_roles">
         <item>CLIENT</item>
         <item>BARISTA</item>

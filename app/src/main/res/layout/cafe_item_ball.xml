@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     app:cardCornerRadius="12dp"
     app:cardElevation="6dp"
     app:cardUseCompatPadding="true">
@@ -12,7 +14,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/bg_dialog_rounded"
+        android:background="@drawable/bg_rounded"
         android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,22 +24,21 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="5dp"
-            android:background="@color/white"
-            app:outerBackgroundColor="@color/white"
-
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/custom_primary_dark_variant"
+            app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:outerBackgroundColor="@color/deep_slate" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:background="@android:color/white"
+            android:background="@android:color/transparent"
             android:orientation="vertical"
+
             android:padding="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cafe_image"
             app:layout_constraintTop_toTopOf="parent">
@@ -49,9 +50,10 @@
                 android:ellipsize="end"
                 android:paddingBottom="4dp"
                 android:singleLine="true"
-                android:textColor="@android:color/black"
+                android:textColor="@color/cube_blue"
                 android:textSize="18sp"
-                android:textStyle="bold" /> <!-- Додаємо обрізку тексту -->
+                android:textStyle="bold"
+                android:typeface="monospace" /> <!-- Додаємо обрізку тексту -->
 
             <TextView
                 android:id="@+id/cafe_real_address"
@@ -60,10 +62,31 @@
                 android:ellipsize="end"
                 android:paddingBottom="4dp"
                 android:singleLine="true"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="16sp" /> <!-- Додаємо обрізку тексту -->
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:typeface="monospace" /> <!-- Додаємо обрізку тексту -->
 
         </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25sp"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+            <com.example.coffeemark.view.ColorBallsView
+                android:id="@+id/colorBallsView"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp" />
+        </HorizontalScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

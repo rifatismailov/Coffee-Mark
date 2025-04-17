@@ -27,7 +27,9 @@
                 android:id="@+id/coffee_view"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                 />
+                app:outerBackgroundColor="@color/white"
+
+                />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

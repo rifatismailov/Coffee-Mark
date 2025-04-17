@@ -2,14 +2,16 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.CoffeeMark" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Основні кольори -->
-        <item name="colorPrimary">@color/custom_primary</item>
-        <item name="colorPrimaryVariant">@color/custom_primary_variant</item>
-        <item name="colorAccent">@color/custom_accent</item>
+        <item name="colorPrimary">@color/custom_primary_light</item>
+        <item name="colorPrimaryVariant">@color/custom_primary_dark</item>
+        <item name="colorAccent">@color/custom_accent_light</item>
 
         <!-- Колір фону -->
-        <item name="android:windowBackground">@color/custom_background</item>
+        <item name="android:windowBackground">@color/white</item>
 
         <!-- Колір тексту -->
-        <item name="android:textColorPrimary">@color/custom_text</item>
+        <item name="android:textColorPrimary">@color/black</item>
     </style>
+
+    <style name="Theme.CoffeeMark" parent="Base.Theme.CoffeeMark" />
 </resources>
