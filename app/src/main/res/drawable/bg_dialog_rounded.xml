@@ -6,7 +6,7 @@
     <solid android:color="@android:color/white"/>
 
     <!-- Закруглені краї -->
-    <corners android:radius="24dp"/>
+    <corners android:radius="15dp"/>
 
     <!-- Внутрішній відступ -->
     <padding

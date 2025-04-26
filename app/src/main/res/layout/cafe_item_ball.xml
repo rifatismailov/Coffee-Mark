@@ -3,15 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-
+    android:layout_height="match_parent"
     app:cardCornerRadius="12dp"
     app:cardElevation="6dp"
     app:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/bg_rounded"
@@ -37,7 +36,6 @@
             android:layout_margin="5dp"
             android:background="@android:color/transparent"
             android:orientation="vertical"
-
             android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cafe_image"
@@ -53,7 +51,7 @@
                 android:textColor="@color/cube_blue"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:typeface="monospace" /> <!-- Додаємо обрізку тексту -->
+                android:typeface="monospace" />
 
             <TextView
                 android:id="@+id/cafe_real_address"
@@ -65,16 +63,17 @@
                 android:textColor="@color/white"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:typeface="monospace" /> <!-- Додаємо обрізку тексту -->
+                android:typeface="monospace" />
 
         </LinearLayout>
 
         <HorizontalScrollView
             android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_marginStart="25dp"
-            android:layout_marginEnd="25sp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="5dp"
             android:fillViewport="true"
             android:scrollbars="none"
             app:layout_constraintBottom_toBottomOf="parent"

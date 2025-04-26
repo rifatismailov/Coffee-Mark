@@ -15,17 +15,22 @@ import android.util.Log;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
+import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.registration.cafe.CafeBase;
 import com.example.coffeemark.registration.cafe.CafeAdapter;
 import com.example.coffeemark.registration.cafe.CafeCart;
-import com.example.coffeemark.user.DatabaseHelper;
 import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.image.ImageHandler;
 
@@ -115,24 +120,46 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        RecyclerView recyclerView = findViewById(R.id.mainCafeList);
+        //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
+//        ViewPager2 viewPager = findViewById(R.id.viewPager);
+//        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
+//        viewPager.setClipToPadding(false);
+//        viewPager.setClipChildren(false);
+//        viewPager.setPadding(0, 0, 0, 100); // Збільшення відступу знизу
+//        viewPager.setOffscreenPageLimit(3);
+//        viewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+//
+//        imageHandler = new ImageHandler(this);
+//        adapter = new CafeAdapter(cafeList, imageHandler);
+//        viewPager.setAdapter(adapter);
+//
+//        CompositePageTransformer transformer = new CompositePageTransformer();
+//        transformer.addTransformer(new MarginPageTransformer(40));
+//        transformer.addTransformer((page, position) -> {
+//            // Налаштування масштабу елементів
+//            float r = 1 - Math.abs(position);
+//            page.setScaleY(0.85f + r * 0.15f); // Зменшуємо картки позаду
+//        });
+//        viewPager.setPageTransformer(transformer);
+//
+
 
         // Ініціалізація RecyclerView для кавʼярень
-        imageHandler = new ImageHandler(this);
-        adapter = new CafeAdapter(cafeList, imageHandler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
+//        imageHandler = new ImageHandler(this);
+//        adapter = new CafeAdapter(cafeList, imageHandler);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView.setAdapter(adapter);
+        replaceFragment(new FragmentOne());
         checkLocalKey(this);
         checkPublicKey(this);
 
-        new DatabaseHelper(this).deleteAllUsers();
+        // new DatabaseHelper(this).deleteAllUsers();
         //registerRegistrationActivity();
-        //startRegistration();
-        for (int i = 0; i < 10; i++) {
-            cafeList.add(new CafeCart("name cafe "+i, "address cafe "+i, "coffee_mark.png",4));
-            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
-        }
+        startRegistration();
+//        for (int i = 0; i < 10; i++) {
+//            cafeList.add(new CafeCart("name cafe "+i, "address cafe "+i, "coffee_mark.png",4));
+//            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
+//        }
 
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
@@ -152,5 +179,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    private void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frameLayout, fragment);
+        transaction.commit();
+    }
 }

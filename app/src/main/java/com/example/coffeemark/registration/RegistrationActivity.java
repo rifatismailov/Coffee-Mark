@@ -32,7 +32,6 @@ import com.example.coffeemark.dialog.ErrorDialog;
 import com.example.coffeemark.registration.cafe.CafeBase;
 import com.example.coffeemark.registration.cafe.CafeShop;
 import com.example.coffeemark.registration.cafe.CafeAdapter;
-import com.example.coffeemark.registration.cafe.CafeCart;
 import com.example.coffeemark.service.Manager;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.util.Decryptor;
@@ -128,8 +127,8 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
     /**
      * Список кавʼярень, які додає користувач.
      */
-    private final List<CafeBase> cafeShopList = new ArrayList<>();
-    private final List<CafeBase> cafeCartList = new ArrayList<>();
+    private final List<CafeBase> cafeShopList_for_Server = new ArrayList<>();
+    private final List<CafeBase> cafeShopList_for_App = new ArrayList<>();
 
 
     /**
@@ -203,7 +202,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
         imageHandler = new ImageHandler(this);
 
         // Ініціалізація RecyclerView для кавʼярень
-        adapter = new CafeAdapter(cafeCartList, imageHandler);
+        adapter = new CafeAdapter(cafeShopList_for_App, imageHandler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -217,8 +216,8 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                 } else {
                     cafeLayout.setVisibility(View.GONE);
                     addCafeButton.setVisibility(View.GONE);
-                    cafeShopList.clear();
-                    cafeCartList.clear();
+                    cafeShopList_for_Server.clear();
+                    cafeShopList_for_App.clear();
                 }
             }
 
@@ -234,9 +233,9 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                 try {
                     String imageCafe = image != null ? image : "coffee_mark.png";
 
-                    cafeShopList.add(new CafeShop(name, address, Encryptor.encryptText(imageCafe, publicKey)));
-                    cafeCartList.add(new CafeCart(name, address, imageCafe));
-                    adapter.notifyItemInserted(cafeCartList.size() - 1); // Оновлюємо RecyclerView
+                    cafeShopList_for_Server.add(new CafeShop(name, address, Encryptor.encryptText(imageCafe, publicKey)));
+                    cafeShopList_for_App.add(new CafeShop(name, address, imageCafe));
+                    adapter.notifyItemInserted(cafeShopList_for_App.size() - 1); // Оновлюємо RecyclerView
 
                     cafeName.setText("");
                     cafeAddress.setText("");
@@ -288,7 +287,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                     .password(Encryptor.encryptText(password.getText().toString(), publicKey))
                     .email(Encryptor.encryptText(email.getText().toString(), publicKey))
                     .role(roleSpinner.getSelectedItem().toString())
-                    .cafes(roleSpinner.getSelectedItem().toString().equals("BARISTA") ? cafeShopList : null) //публічна іфномарція
+                    .cafes(roleSpinner.getSelectedItem().toString().equals("BARISTA") ? cafeShopList_for_Server : null) //публічна іфномарція
                     .image(Encryptor.encryptText(registration.getImage(), publicKey)) // може бути пріватна інфомарція
                     .public_key(publicKeyToString(localPublicKey))
                     .build();
@@ -343,8 +342,8 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
 
             File savedFile = imageHandler.processAndSaveImage(uri);
             image = imageHandler.getSavedFileName();
-            if (!cafeShopList.isEmpty()) {
-                for (CafeBase cafe : cafeShopList) {
+            if (!cafeShopList_for_Server.isEmpty()) {
+                for (CafeBase cafe : cafeShopList_for_Server) {
                     cafe.setCafeImage(image);
                 }
                 adapter.notifyDataSetChanged(); // Оновлюємо весь список
