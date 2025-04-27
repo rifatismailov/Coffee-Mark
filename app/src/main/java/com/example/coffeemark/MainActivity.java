@@ -17,20 +17,14 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.CompositePageTransformer;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
 import com.example.coffeemark.fragment.FragmentOne;
-import com.example.coffeemark.registration.cafe.CafeBase;
-import com.example.coffeemark.registration.cafe.CafeAdapter;
-import com.example.coffeemark.registration.cafe.CafeCart;
+import com.example.coffeemark.cafe.CafeBase;
+import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.image.ImageHandler;
 

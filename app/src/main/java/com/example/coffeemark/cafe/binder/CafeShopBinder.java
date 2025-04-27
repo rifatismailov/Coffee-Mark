@@ -1,9 +1,9 @@
-package com.example.coffeemark.registration.cafe.binder;
+package com.example.coffeemark.cafe.binder;
 
 import android.util.Log;
 
-import com.example.coffeemark.registration.cafe.CafeShop;
-import com.example.coffeemark.registration.cafe.holder.CafeShopViewHolder;
+import com.example.coffeemark.cafe.CafeShop;
+import com.example.coffeemark.cafe.holder.CafeShopViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.io.IOException;

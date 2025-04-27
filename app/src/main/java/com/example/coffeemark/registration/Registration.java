@@ -1,7 +1,6 @@
 package com.example.coffeemark.registration;
 
-import com.example.coffeemark.registration.cafe.CafeBase;
-import com.example.coffeemark.registration.cafe.CafeShop;
+import com.example.coffeemark.cafe.CafeBase;
 
 import java.util.List;
 

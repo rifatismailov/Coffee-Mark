@@ -29,16 +29,15 @@ import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.Respond;
 import com.example.coffeemark.dialog.AuthorizationDialog;
 import com.example.coffeemark.dialog.ErrorDialog;
-import com.example.coffeemark.registration.cafe.CafeBase;
-import com.example.coffeemark.registration.cafe.CafeShop;
-import com.example.coffeemark.registration.cafe.CafeAdapter;
+import com.example.coffeemark.cafe.CafeBase;
+import com.example.coffeemark.cafe.CafeShop;
+import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.service.Manager;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
 import com.example.coffeemark.util.LocalErrorResponse;
 import com.example.coffeemark.util.image.ImageHandler;
-import com.example.coffeemark.util.UrlBuilder;
 import com.example.coffeemark.view.CoffeeView;
 import com.example.coffeemark.view.CustomButton;
 
@@ -72,7 +71,8 @@ import java.util.List;
  * @author Ріфат Ісмаїлов
  */
 
-public class RegistrationActivity extends AppCompatActivity implements Manager.FileTransferCallback, Manager.ManagerRegistration, AuthorizationDialog.Authorization {
+public class RegistrationActivity extends AppCompatActivity implements Manager.FileTransferCallback,
+        Manager.ManagerRegistration, AuthorizationDialog.Authorization,CafeAdapter.OnItemClickListener {
 
     /**
      * Кастомне зображення кавової іконки.
@@ -202,7 +202,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
         imageHandler = new ImageHandler(this);
 
         // Ініціалізація RecyclerView для кавʼярень
-        adapter = new CafeAdapter(cafeShopList_for_App, imageHandler);
+        adapter = new CafeAdapter(cafeShopList_for_App, imageHandler,this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -291,6 +291,10 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                     .image(Encryptor.encryptText(registration.getImage(), publicKey)) // може бути пріватна інфомарція
                     .public_key(publicKeyToString(localPublicKey))
                     .build();
+
+                    for (CafeBase cafeShop:request.getCafes()){
+                        Log.e("RegisterActivity", "Saved to: " +cafeShop.getName());
+                    }
             Manager.registration(this, request);
         } else {
             // Поля не заповнені
@@ -329,14 +333,6 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
      */
     private void handleImageUri(Uri uri) {
         try {
-            String serverUrl = new UrlBuilder.Builder()
-                    .setProtocol("http")
-                    .setIp("192.168.177.4")
-                    .setPort("8020")
-                    .setDirectory("/api/files/upload")
-                    .build()
-                    .buildUrl();
-
 
             coffeeView.setImageBitmap(imageHandler.getBitmap(uri));
 
@@ -493,5 +489,10 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
     public void continueNext() {
         messageToActivity("Registration");
         finish();
+    }
+
+    @Override
+    public void onItemClick(CafeBase model) {
+
     }
 }

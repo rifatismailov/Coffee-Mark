@@ -1,6 +1,5 @@
-package com.example.coffeemark.registration.cafe;
+package com.example.coffeemark.cafe;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffeemark.R;
-import com.example.coffeemark.registration.cafe.binder.CafeCartBinder;
-import com.example.coffeemark.registration.cafe.binder.CafeShopBinder;
-import com.example.coffeemark.registration.cafe.holder.CafeCartViewHolder;
-import com.example.coffeemark.registration.cafe.holder.CafeShopViewHolder;
+import com.example.coffeemark.cafe.binder.CafeCartBinder;
+import com.example.coffeemark.cafe.binder.CafeShopBinder;
+import com.example.coffeemark.cafe.holder.CafeCartViewHolder;
+import com.example.coffeemark.cafe.holder.CafeShopViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.List;
@@ -38,15 +37,17 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // Обробник зображень, використовується для завантаження локальних фото
     public ImageHandler imageHandler;
 
+    private OnItemClickListener onItemClickListener;
     /**
      * Конструктор адаптера.
      *
      * @param items        список елементів {@link CafeBase}, які буде відображено
      * @param imageHandler об'єкт для завантаження зображень
      */
-    public CafeAdapter(List<CafeBase> items, ImageHandler imageHandler) {
+    public CafeAdapter(List<CafeBase> items, ImageHandler imageHandler,OnItemClickListener onItemClickListener) {
         this.items = items;
         this.imageHandler = imageHandler;
+        this.onItemClickListener=onItemClickListener;
     }
 
     /**
@@ -99,6 +100,9 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof CafeShopViewHolder && item instanceof CafeShop) {
             shopBinder.bind((CafeShopViewHolder) holder, (CafeShop) item, imageHandler);
         }
+        holder.itemView.setOnClickListener(v -> {
+            onItemClickListener.onItemClick(item);
+        });
     }
 
     /**
@@ -120,4 +124,9 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         items.add(cafe);
         notifyItemInserted(items.size() - 1);
     }
+
+    public interface OnItemClickListener {
+        void onItemClick(CafeBase model);
+    }
+
 }

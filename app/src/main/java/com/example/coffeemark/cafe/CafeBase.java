@@ -1,4 +1,4 @@
-package com.example.coffeemark.registration.cafe;
+package com.example.coffeemark.cafe;
 
 public interface CafeBase {
     String getName();

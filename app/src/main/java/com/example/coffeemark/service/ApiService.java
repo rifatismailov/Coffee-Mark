@@ -8,6 +8,7 @@ import com.example.coffeemark.service.public_key.PublicKeyRequest;
 import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
+import com.example.coffeemark.service.search.SearchRequest;
 
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
@@ -42,6 +43,9 @@ public interface ApiService {
 
     @GET("/api/files/download/{fileName}")
     Call<ResponseBody> downloadFile(@Path("fileName") String fileName);
+
+    @POST("/api/auth/search")
+    Call<SearchRequest> search(@Body SearchRequest request);
 
 }
 

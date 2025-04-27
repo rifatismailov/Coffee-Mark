@@ -1,4 +1,4 @@
-package com.example.coffeemark.registration.cafe.holder;
+package com.example.coffeemark.cafe.holder;
 
 import android.view.View;
 import android.widget.TextView;
