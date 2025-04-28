@@ -42,7 +42,9 @@ import java.util.Base64;
 import java.util.List;
 
 public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener {
-    Context context;
+    private Context context;
+    private CafeBase model;
+    private CountDownTimer currentTimer;  // створюємо змінну класу
 
     public FragmentOne() {
     }
@@ -108,8 +110,17 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
 
     @Override
     public void onItemClick(CafeBase model) {
+        startTimer(model);
+    }
 
-        new CountDownTimer(15000, 1000) { // 15000 мс = 15 секунд, оновлюємо кожну 1 секунду
+    public void startTimer(CafeBase model) {
+        // Якщо попередній таймер працює — зупиняємо його
+        if (currentTimer != null) {
+            currentTimer.cancel();
+        }
+
+        // Створюємо новий таймер
+        currentTimer = new CountDownTimer(15000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 try {
@@ -128,5 +139,6 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
 
         }.start();
     }
-
 }
+
+

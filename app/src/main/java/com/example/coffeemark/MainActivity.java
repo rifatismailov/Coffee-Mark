@@ -2,6 +2,7 @@ package com.example.coffeemark;
 
 import static com.example.coffeemark.service.Manager.checkPublicKey;
 import static com.example.coffeemark.util.KeyUntil.checkLocalKey;
+import static com.example.coffeemark.util.KeyUntil.getPublicKeyHash;
 import static com.example.coffeemark.util.KeyUntil.loadPrivateKey;
 
 import android.content.BroadcastReceiver;
@@ -11,6 +12,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
@@ -25,15 +27,20 @@ import com.example.coffeemark.authorization.AuthorizationActivity;
 import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.cafe.CafeBase;
 import com.example.coffeemark.cafe.CafeAdapter;
+import com.example.coffeemark.service.Manager;
+import com.example.coffeemark.service.authorization.AuthorizationRequest;
+import com.example.coffeemark.service.search.SearchRequest;
 import com.example.coffeemark.util.Decryptor;
+import com.example.coffeemark.util.Encryptor;
 import com.example.coffeemark.util.image.ImageHandler;
+import com.example.coffeemark.view.CustomButton;
 
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch{
 
     private final BroadcastReceiver registrationAuthorizationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -114,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        CustomButton customButton=findViewById(R.id.request_button);
         //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
 //        ViewPager2 viewPager = findViewById(R.id.viewPager);
 //        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
@@ -171,11 +179,47 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("MainActivity", e.toString());
         }
+        customButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                senRequest();
+            }
+        });
     }
 
     private void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayout, fragment);
         transaction.commit();
+    }
+
+    public void senRequest(){
+        SearchRequest request = new SearchRequest.Builder()
+                .setUsername("User id 000")
+                .setSearchBy("Name Cafe")
+                .setSearch("Cafe Cafe Cafe")
+                .build();
+
+        Manager.search(this, request);
+    }
+
+    @Override
+    public void onSuccess(String message) {
+
+    }
+
+    @Override
+    public void onError(String message) {
+
+    }
+
+    @Override
+    public void messageToActivity(String message) {
+
+    }
+
+    @Override
+    public void saveAccount() {
+
     }
 }

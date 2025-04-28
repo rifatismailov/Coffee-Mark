@@ -22,6 +22,19 @@ public class RetrofitClient {
                 .build();
     }
 
+    public static Retrofit getClientReg() {
+        String serverUrl = new UrlBuilder.Builder()
+                .setProtocol("http")
+                .setIp("192.168.1.186")
+                .setPort("8080")
+                .build()
+                .buildUrl();
+        return new Retrofit.Builder()
+                .baseUrl(serverUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
     public static Retrofit getClientFS() {
         String serverUrl = new UrlBuilder.Builder()
                 .setProtocol("http")

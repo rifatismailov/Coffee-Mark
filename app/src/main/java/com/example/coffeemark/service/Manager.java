@@ -21,6 +21,8 @@ import com.example.coffeemark.service.public_key.PublicKeyResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
 import com.example.coffeemark.progress.ProgressRequestBody;
+import com.example.coffeemark.service.search.SearchRequest;
+import com.example.coffeemark.service.search.SearchResponse;
 
 import java.io.File;
 import java.security.PublicKey;
@@ -325,4 +327,39 @@ public class Manager {
         void onFinish();
     }
 
+    public static void search(ManagerSearch managerSearch, SearchRequest request) {
+        // Викликаємо метод з ApiHelper
+        ApiHelper.search(request, new ApiHelper.ApiCallback<SearchResponse>() {
+            @Override
+            public void onSuccess(SearchResponse response) {
+                String message = response.getMessage();
+                Log.e("RegisterActivity", "Message: " + message);
+
+                if (response.isSuccess()) {
+                    managerSearch.onSuccess(message);
+
+                } else {
+                    managerSearch.onError(message);
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage, int code) {
+                Log.e("RegisterActivity", "HTTP-код помилки: " + code);
+                Log.e("RegisterActivity", "Повідомлення: " + errorMessage);
+
+                managerSearch.onError(errorMessage);
+            }
+        });
+    }
+    public interface ManagerSearch {
+        void onSuccess(String message);
+
+        void onError(String message);
+
+        void messageToActivity(String message);
+
+        void saveAccount();
+
+    }
 }

@@ -10,6 +10,8 @@ import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
 import com.example.coffeemark.progress.ProgressRequestBody;
 import com.example.coffeemark.progress.ProgressResponseBody;
+import com.example.coffeemark.service.search.SearchRequest;
+import com.example.coffeemark.service.search.SearchResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -138,6 +140,17 @@ public class ApiHelper {
     public static void register(RegisterRequest request, ApiCallback<RegisterResponse> callback) {
         ApiService api = RetrofitClient.getClient().create(ApiService.class);
         sendRequest(api.registerUser(request), callback);
+    }
+
+    /**
+     * Пошук.
+     *
+     * @param request  об'єкт з даними для пошуку
+     * @param callback обробник відповіді
+     */
+    public static void search(SearchRequest request, ApiCallback<SearchResponse> callback) {
+        ApiService api = RetrofitClient.getClientReg().create(ApiService.class);
+        sendRequest(api.search(request), callback);
     }
 
     /**
