@@ -197,6 +197,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
         publicKey = loadPublicKey(this, "public.pem");
         localPublicKey = loadPublicKey(this, "user_public.pem");
         localPrivateKey = loadPrivateKey(this, "user_private.pem");
+        Log.e("RegisterActivity", publicKey.toString());
 
         // Ініціалізація обробника зображень
         imageHandler = new ImageHandler(this);
@@ -250,7 +251,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
             try {
                 registerUser();
             } catch (Exception e) {
-                Log.e("RegisterActivity", e.toString());
+                Log.e("RegisterActivity", "registerUser "+e.toString());
             }
         });
         coffeeView.setOnClickListener(view -> openGallery());
@@ -264,6 +265,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void registerUser() throws Exception {
 
+        // Створення об'єкта registration
         registration = new Registration.Builder()
                 .username(username.getText().toString())
                 .password(password.getText().toString())
@@ -272,6 +274,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                 .image(image != null ? image : "coffee_mark.png")
                 .build();
 
+        // Перевірка валідності полів
         boolean isValid = FieldValidator.areFieldsValidRegistration(
                 username.getText().toString(),
                 password.getText().toString(),
@@ -280,27 +283,32 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
 
         if (isValid) {
 
+            // Налаштовуємо кнопку на "Please wait"
             registerButton.onPress("Please wait");
 
+            // Створюємо список кафе, який буде передано в запит
+            List<CafeBase> cafes = roleSpinner.getSelectedItem().toString().equals("BARISTA") ? cafeShopList_for_Server : new ArrayList<>();
+
+            // Створення об'єкта RegisterRequest
             RegisterRequest request = new RegisterRequest.Builder()
                     .username(Encryptor.encryptText(username.getText().toString(), publicKey))
                     .password(Encryptor.encryptText(password.getText().toString(), publicKey))
                     .email(Encryptor.encryptText(email.getText().toString(), publicKey))
                     .role(roleSpinner.getSelectedItem().toString())
-                    .cafes(roleSpinner.getSelectedItem().toString().equals("BARISTA") ? cafeShopList_for_Server : null) //публічна іфномарція
+                    .cafes(cafes) // передаємо список кафе (порожній список, якщо не "BARISTA")
                     .image(Encryptor.encryptText(registration.getImage(), publicKey)) // може бути пріватна інфомарція
                     .public_key(publicKeyToString(localPublicKey))
                     .build();
 
-                    for (CafeBase cafeShop:request.getCafes()){
-                        Log.e("RegisterActivity", "Saved to: " +cafeShop.getName());
-                    }
+            // Відправка запиту на реєстрацію
             Manager.registration(this, request);
+
         } else {
-            // Поля не заповнені
+            // Якщо поля не заповнені
             Toast.makeText(RegistrationActivity.this, "Заповніть буд ласка всі поля", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     /**
      * Відкриває галерею для вибору зображення користувача.
@@ -366,26 +374,48 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
             JSONObject jsonObject = new JSONObject(message);
             Respond respond = new Respond(jsonObject);
 
+            Log.e("RegisterActivity", "jsonObject "+jsonObject);
+            Log.e("RegisterActivity", "localPrivateKey "+localPrivateKey);
 
             // Дешифрування даних з respond
             String usernameFromRespond = Decryptor.decryptText(respond.getUsername(), localPrivateKey);
+            Log.e("RegisterActivity", "usernameFromRespond "+usernameFromRespond);
+
             String passwordFromRespond = Decryptor.decryptText(respond.getPassword(), localPrivateKey);
+            Log.e("RegisterActivity", "passwordFromRespond "+passwordFromRespond);
+
             String emailFromRespond = Decryptor.decryptText(respond.getEmail(), localPrivateKey);
+            Log.e("RegisterActivity", "emailFromRespond "+emailFromRespond);
+
             String roleFromRespond = respond.getRole();
             String imageFromRespond = Decryptor.decryptText(respond.getImage(), localPrivateKey);
+            Log.e("RegisterActivity", "imageFromRespond "+imageFromRespond);
+
+            Log.e("RegisterActivity", "AccountManager "+AccountManager.getImage(this));
+
             if (!"coffee_mark.png".equals(imageFromRespond)) {
                 ImageHandler imageHandler = new ImageHandler(this);
-                coffeeView.setImageBitmap(imageHandler.getBitmap(imageHandler.getDirFile(AccountManager.getImage(this))));
+                coffeeView.setImageBitmap(imageHandler.getBitmap(imageHandler.getDirFile(imageFromRespond)));
             } else {
                 coffeeView.setImageResource(R.drawable.emoticon_glas_smiley);
             }
 
             // Отримуємо дані з registration
             String usernameFromRegistration = registration.getUsername();
+            Log.e("RegisterActivity", "usernameFromRegistration "+usernameFromRegistration);
+
             String passwordFromRegistration = registration.getPassword();
+            Log.e("RegisterActivity", "passwordFromRegistration "+passwordFromRegistration);
+
             String emailFromRegistration = registration.getEmail();
+            Log.e("RegisterActivity", "emailFromRegistration "+emailFromRegistration);
+
             String roleFromRegistration = registration.getRole();
+            Log.e("RegisterActivity", "roleFromRegistration "+roleFromRegistration);
+
             String imageFromRegistration = registration.getImage();
+            Log.e("RegisterActivity", "imageFromRegistration "+imageFromRegistration);
+
 
             // Перевірка чи дані з registration співпадають з respond
             boolean isDataEqual = usernameFromRespond.equals(usernameFromRegistration) &&

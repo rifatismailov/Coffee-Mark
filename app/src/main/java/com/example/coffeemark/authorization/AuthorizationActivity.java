@@ -212,12 +212,10 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
     public void onFileError(String message) {
         try {
             LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
-            new ErrorDialog(this, "Authorization", localErrorResponse).show();
-
             if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())) {
                 Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
             }
-
+            new ErrorDialog(this, "Authorization", localErrorResponse).show();
             StatusHandler.handleStatus(localErrorResponse.getStatus(), coffeeView);
         } catch (Exception e) {
             Log.e("AuthorizationActivity", "Помилка під час обробки помилки " + e);
@@ -262,8 +260,19 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
     }
 
     @Override
-    public void onError(String e) {
-        Log.e("AuthorizationActivity", e);
+    public void onError(String message) {
+        Log.e("AuthorizationActivity", "Authorization onError "+message);
+        try {
+            LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
+            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())) {
+                Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
+            }
+            new ErrorDialog(this, "Authorization", localErrorResponse).show();
+            StatusHandler.handleStatus(localErrorResponse.getStatus(), coffeeView);
+        } catch (Exception e) {
+            Log.e("AuthorizationActivity", "Помилка під час обробки помилки " + e);
+        }
+        login.stopLoading();
 
     }
 

@@ -121,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        checkLocalKey(this);
+        checkPublicKey(this);
         CustomButton customButton=findViewById(R.id.request_button);
         //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
 //        ViewPager2 viewPager = findViewById(R.id.viewPager);
@@ -151,13 +153,11 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 //        adapter = new CafeAdapter(cafeList, imageHandler);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 //        recyclerView.setAdapter(adapter);
-        replaceFragment(new FragmentOne());
-        checkLocalKey(this);
-        checkPublicKey(this);
 
         // new DatabaseHelper(this).deleteAllUsers();
         //registerRegistrationActivity();
         startRegistration();
+        replaceFragment(new FragmentOne());
 //        for (int i = 0; i < 10; i++) {
 //            cafeList.add(new CafeCart("name cafe "+i, "address cafe "+i, "coffee_mark.png",4));
 //            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
