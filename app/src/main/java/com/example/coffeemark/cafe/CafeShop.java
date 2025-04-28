@@ -1,12 +1,12 @@
 package com.example.coffeemark.cafe;
 
-public class CafeShop implements CafeBase{
+public class CafeShop implements CafeBase {
 
     private final String name;
     private final String address;
     private String cafe_image;
 
-    public CafeShop(String name, String address,String cafe_image) {
+    public CafeShop(String name, String address, String cafe_image) {
         this.name = name;
         this.address = address;
         this.cafe_image = cafe_image;
@@ -29,6 +29,5 @@ public class CafeShop implements CafeBase{
     public void setCafeImage(String image) {
         this.cafe_image = cafe_image;
     }
-
 
 }

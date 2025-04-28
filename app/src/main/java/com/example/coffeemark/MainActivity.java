@@ -24,9 +24,11 @@ import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
+import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.cafe.CafeBase;
 import com.example.coffeemark.cafe.CafeAdapter;
+import com.example.coffeemark.fragment.FragmentTwo;
 import com.example.coffeemark.service.Manager;
 import com.example.coffeemark.service.authorization.AuthorizationRequest;
 import com.example.coffeemark.service.search.SearchRequest;
@@ -34,13 +36,20 @@ import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
 import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CustomButton;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch{
+public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch {
 
     private final BroadcastReceiver registrationAuthorizationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -103,17 +112,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         startActivity(serviceIntent);
     }
 
-    /**
-     * Список кавʼярень, які додає користувач.
-     */
-    private final List<CafeBase> cafeList = new ArrayList<>();
-
-    /**
-     * Адаптер для відображення списку кавʼярень.
-     */
-    private CafeAdapter adapter;
-
-    private ImageHandler imageHandler;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         setContentView(R.layout.activity_main);
         checkLocalKey(this);
         checkPublicKey(this);
-        CustomButton customButton=findViewById(R.id.request_button);
+        CustomButton customButton = findViewById(R.id.request_button);
         //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
 //        ViewPager2 viewPager = findViewById(R.id.viewPager);
 //        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
@@ -193,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         transaction.commit();
     }
 
-    public void senRequest(){
+    public void senRequest() {
         SearchRequest request = new SearchRequest.Builder()
                 .setUsername("User id 000")
                 .setSearchBy("name")
@@ -205,7 +203,24 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
     @Override
     public void onSuccess(Object message) {
-        Log.e("MainActivity", message.toString());
+        try {
+            replaceFragment(new FragmentTwo());
+            // створюємо відразу JSONArray
+            JSONArray responseArray = new JSONArray(message.toString());
+            // тепер можеш пройтись по елементах масиву
+            for (int i = 0; i < responseArray.length(); i++) {
+                JSONObject cafeObject = responseArray.getJSONObject(i);
+                long id = cafeObject.getLong("id");
+                String name = cafeObject.getString("name");
+                String address = cafeObject.getString("address");
+                String cafeImage = cafeObject.getString("cafe_image");
+
+                Log.e("MainActivity", "Cafe: id=" + id + ", name=" + name);
+            }
+        } catch (Exception e) {
+            Log.e("MainActivity", e.toString());
+        }
+
     }
 
     @Override
