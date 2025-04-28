@@ -196,20 +196,20 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     public void senRequest(){
         SearchRequest request = new SearchRequest.Builder()
                 .setUsername("User id 000")
-                .setSearchBy("Name Cafe")
-                .setSearch("Cafe Cafe Cafe")
+                .setSearchBy("name")
+                .setSearch("albert")
                 .build();
 
         Manager.search(this, request);
     }
 
     @Override
-    public void onSuccess(String message) {
-
+    public void onSuccess(Object message) {
+        Log.e("MainActivity", message.toString());
     }
 
     @Override
-    public void onError(String message) {
+    public void onError(Object message) {
 
     }
 

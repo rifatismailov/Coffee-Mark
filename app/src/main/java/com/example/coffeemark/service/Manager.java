@@ -332,7 +332,7 @@ public class Manager {
         ApiHelper.search(request, new ApiHelper.ApiCallback<SearchResponse>() {
             @Override
             public void onSuccess(SearchResponse response) {
-                String message = response.getMessage();
+                Object message = response.getMessage();
                 Log.e("RegisterActivity", "Message: " + message);
 
                 if (response.isSuccess()) {
@@ -353,9 +353,9 @@ public class Manager {
         });
     }
     public interface ManagerSearch {
-        void onSuccess(String message);
+        void onSuccess(Object message);
 
-        void onError(String message);
+        void onError(Object message);
 
         void messageToActivity(String message);
 
