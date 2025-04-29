@@ -2,6 +2,8 @@ package com.example.coffeemark.cafe.binder;
 
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeShop;
 import com.example.coffeemark.cafe.holder.CafeShopViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
@@ -31,16 +33,17 @@ public class CafeShopBinder implements CafeViewHolderBinder<CafeShopViewHolder, 
         // Встановлюємо адресу кафе
         holder.cafeAddress.setText(shop.getAddress());
 
-        try {
-            // Якщо зображення вказано — намагаємося завантажити його та встановити
-            if (!shop.getCafeImage().isEmpty()) {
-                holder.cafe_image.setImageBitmap(
-                        imageHandler.getBitmap(imageHandler.getDirFile(shop.getCafeImage()))
-                );
-            }
-        } catch (IOException e) {
-            // У разі помилки при завантаженні — логгування
-            Log.e("CafeShopBinder", e.toString());
+
+        // Якщо зображення вказано — намагаємося завантажити його та встановити
+        // Використовуємо Glide для завантаження зображення
+        if (!shop.getCafeImage().isEmpty()) {
+            Glide.with(holder.cafe_image.getContext())
+                    .load(imageHandler.getDirFile(shop.getCafeImage()))
+                    .placeholder(R.drawable.emoticon_shame_smiley) // Можеш задати тимчасову картинку на час завантаження
+                    .error(R.drawable.emoticon_cry)              // Картинка при помилці
+                    .into(holder.cafe_image);
+        } else {
+            holder.cafe_image.setImageResource(R.drawable.emoticon_shame_smiley);
         }
     }
 }
