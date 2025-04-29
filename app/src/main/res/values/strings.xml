@@ -19,4 +19,9 @@
         <item>CLIENT</item>
         <item>BARISTA</item>
     </string-array>
+    <string-array name="search_options">
+        <item>Name</item>
+        <item>Address</item>
+    </string-array>
+
 </resources>

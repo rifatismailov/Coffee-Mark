@@ -12,7 +12,13 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.PopupWindow;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.RequiresApi;
@@ -122,48 +128,16 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         checkLocalKey(this);
         checkPublicKey(this);
         CustomButton customButton = findViewById(R.id.request_button);
-        //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
-//        ViewPager2 viewPager = findViewById(R.id.viewPager);
-//        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
-//        viewPager.setClipToPadding(false);
-//        viewPager.setClipChildren(false);
-//        viewPager.setPadding(0, 0, 0, 100); // Збільшення відступу знизу
-//        viewPager.setOffscreenPageLimit(3);
-//        viewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
-//
-//        imageHandler = new ImageHandler(this);
-//        adapter = new CafeAdapter(cafeList, imageHandler);
-//        viewPager.setAdapter(adapter);
-//
-//        CompositePageTransformer transformer = new CompositePageTransformer();
-//        transformer.addTransformer(new MarginPageTransformer(40));
-//        transformer.addTransformer((page, position) -> {
-//            // Налаштування масштабу елементів
-//            float r = 1 - Math.abs(position);
-//            page.setScaleY(0.85f + r * 0.15f); // Зменшуємо картки позаду
-//        });
-//        viewPager.setPageTransformer(transformer);
-//
-
-
-        // Ініціалізація RecyclerView для кавʼярень
-//        imageHandler = new ImageHandler(this);
-//        adapter = new CafeAdapter(cafeList, imageHandler);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(adapter);
+      // Дані для вибору
+        String[] searchOptions = {"Name", "Address","Barista","Coffee"};
 
         // new DatabaseHelper(this).deleteAllUsers();
         //registerRegistrationActivity();
         startRegistration();
         replaceFragment(new FragmentOne());
-//        for (int i = 0; i < 10; i++) {
-//            cafeList.add(new CafeCart("name cafe "+i, "address cafe "+i, "coffee_mark.png",4));
-//            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
-//        }
 
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
-
             String username = Decryptor.decryptText(AccountManager.getUsername(getBaseContext()), privateKey);
             String password = Decryptor.decryptText(AccountManager.getPassword(getBaseContext()), privateKey);
             String email = Decryptor.decryptText(AccountManager.getEmail(getBaseContext()), privateKey);
@@ -180,9 +154,48 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                senRequest();
+                NumberPicker picker = new NumberPicker(MainActivity.this);
+                picker.setMinValue(0);
+                picker.setMaxValue(searchOptions.length - 1);
+                picker.setDisplayedValues(searchOptions);
+                picker.setWrapSelectorWheel(true);
+                picker.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                // Автоматичне оновлення при прокрутці
+                picker.setOnValueChangedListener((pickerView, oldVal, newVal) -> {
+                    String selected = searchOptions[newVal];
+                    customButton.setMessage(selected); // Оновлюємо кнопку автоматично
+                });
+
+                // Кнопка закриття (необов’язково)
+                Button closeButton = new Button(MainActivity.this);
+                closeButton.setText("Закрити");
+                closeButton.setOnClickListener(v -> popupWindow.dismiss());
+
+                LinearLayout layout = new LinearLayout(MainActivity.this);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                layout.setPadding(40, 40, 40, 40);
+                layout.setBackgroundResource(R.drawable.popup_background);
+                layout.addView(picker);
+                layout.addView(closeButton);
+
+                popupWindow = new PopupWindow(
+                        layout,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+
+                popupWindow.showAsDropDown(customButton, 0, -customButton.getHeight() * 3);
             }
+
+            PopupWindow popupWindow;
         });
+
+
+
     }
 
     private void replaceFragment(Fragment fragment) {
