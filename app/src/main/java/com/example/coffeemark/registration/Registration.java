@@ -1,6 +1,7 @@
 package com.example.coffeemark.registration;
 
 import com.example.coffeemark.cafe.CafeBase;
+import com.example.coffeemark.service.registration.RegisterRequest;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public class Registration {
     private final List<CafeBase> cafeBaseList;
     private final String image;
     private final String public_key;
+    private final String uuid;
+
     private Registration(Builder builder) {
         this.username = builder.username;
         this.password = builder.password;
@@ -20,6 +23,8 @@ public class Registration {
         this.cafeBaseList = builder.cafeBaseList;
         this.image = builder.image;
         this.public_key=builder.public_key;
+        this.uuid=builder.uuid;
+
     }
 
     public String getUsername() {
@@ -48,7 +53,9 @@ public class Registration {
     public String getPublic_key(){
         return public_key;
     }
-
+    public String getUuid(){
+        return uuid;
+    }
     // Builder class
     public static class Builder {
         private String username;
@@ -58,6 +65,7 @@ public class Registration {
         private List<CafeBase> cafeBaseList;
         private String image;
         private String public_key;
+        private String uuid;
 
         public Builder username(String username) {
             this.username = username;
@@ -92,7 +100,10 @@ public class Registration {
             this.public_key = public_key;
             return this;
         }
-
+        public Builder uuid(String uuid) {
+            this.uuid = uuid;
+            return this;
+        }
         public Registration build() {
             return new Registration(this);
         }

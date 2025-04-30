@@ -9,13 +9,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.PopupWindow;
@@ -42,6 +48,7 @@ import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
 import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CustomButton;
+import com.example.coffeemark.view.CustomNumberPicker;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -49,6 +56,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.security.PrivateKey;
 import java.util.ArrayList;
@@ -152,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
             Log.e("MainActivity", e.toString());
         }
         customButton.setOnClickListener(new View.OnClickListener() {
+            PopupWindow popupWindow;
             @Override
             public void onClick(View view) {
                 NumberPicker picker = new NumberPicker(MainActivity.this);
@@ -159,27 +168,24 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 picker.setMaxValue(searchOptions.length - 1);
                 picker.setDisplayedValues(searchOptions);
                 picker.setWrapSelectorWheel(true);
-                picker.setLayoutParams(new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
 
                 // Автоматичне оновлення при прокрутці
                 picker.setOnValueChangedListener((pickerView, oldVal, newVal) -> {
                     String selected = searchOptions[newVal];
-                    customButton.setMessage(selected); // Оновлюємо кнопку автоматично
+                    Log.e("CustomNumberPicker", "Paint selected " + selected);
+                    // Оновлюємо кнопку автоматично
+                    customButton.setMessage(selected);
+
                 });
 
-                // Кнопка закриття (необов’язково)
-                Button closeButton = new Button(MainActivity.this);
-                closeButton.setText("Закрити");
-                closeButton.setOnClickListener(v -> popupWindow.dismiss());
 
+                // Розміщуємо в LinearLayout
                 LinearLayout layout = new LinearLayout(MainActivity.this);
                 layout.setOrientation(LinearLayout.VERTICAL);
                 layout.setPadding(40, 40, 40, 40);
-                layout.setBackgroundResource(R.drawable.popup_background);
+                layout.setBackgroundResource(R.drawable.popup_background); // фоновий стиль
+
                 layout.addView(picker);
-                layout.addView(closeButton);
 
                 popupWindow = new PopupWindow(
                         layout,
@@ -190,11 +196,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
                 popupWindow.showAsDropDown(customButton, 0, -customButton.getHeight() * 3);
             }
-
-            PopupWindow popupWindow;
         });
-
-
 
     }
 

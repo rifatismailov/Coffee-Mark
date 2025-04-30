@@ -49,6 +49,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Клас {@code RegistrationActivity} відповідає за реєстрацію нового користувача.
@@ -264,7 +265,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void registerUser() throws Exception {
-
+        String uuid = UUID.randomUUID().toString();
         // Створення об'єкта registration
         registration = new Registration.Builder()
                 .username(username.getText().toString())
@@ -272,6 +273,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                 .email(email.getText().toString())
                 .role(roleSpinner.getSelectedItem().toString())
                 .image(image != null ? image : "coffee_mark.png")
+                .uuid(uuid)
                 .build();
 
         // Перевірка валідності полів
@@ -298,6 +300,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                     .cafes(cafes) // передаємо список кафе (порожній список, якщо не "BARISTA")
                     .image(Encryptor.encryptText(registration.getImage(), publicKey)) // може бути пріватна інфомарція
                     .public_key(publicKeyToString(localPublicKey))
+                    .uuid(registration.getUuid())
                     .build();
 
             // Відправка запиту на реєстрацію

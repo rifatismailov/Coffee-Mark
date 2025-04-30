@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.UUID;
 
 /**
  * Клас {@code AuthorizationActivity} відповідає за авторизацію користувача.
@@ -68,6 +69,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
     private PublicKey localPublicKey;
     private PrivateKey localPrivateKey;
     private Account account;
+    private final String uuid = UUID.randomUUID().toString();
 
     /**
      * Відкриває активність реєстрації нового користувача.
@@ -112,10 +114,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
             Log.e("AuthorizationActivity", "Не вдалося завантажити публічний ключ", e);
 
             // Відображення помилки у вікні
-            new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder()
-                    .status("1006")
-                    .message("Неможливо авторизуватися. Спробуйте пізніше.")
-                    .build()).show();
+            new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder().status("1006").message("Неможливо авторизуватися. Спробуйте пізніше.").build()).show();
 
             login.setEnabled(false);
             registration.setEnabled(false);
@@ -128,6 +127,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void registerUser(PublicKey publicKey) {
+
         userPassword = password.getText().toString();
         userEmail = email.getText().toString();
         boolean isValid = FieldValidator.areFieldsValidAuthorization(userEmail, userPassword);
@@ -135,28 +135,18 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
         if (isValid) {
             try {
                 login.onPress("LOGIN");
-                request = new AuthorizationRequest.Builder()
-                        .email(Encryptor.encryptText(userEmail, publicKey))
-                        .password(Encryptor.encryptText(userPassword, publicKey))
-                        .hash_user_public(getPublicKeyHash(localPublicKey))
-                        .build();
+                request = new AuthorizationRequest.Builder().email(Encryptor.encryptText(userEmail, publicKey)).password(Encryptor.encryptText(userPassword, publicKey)).hash_user_public(getPublicKeyHash(localPublicKey)).uuid(uuid).build();
 
                 Manager.authorization(this, request);
 
             } catch (Exception e) {
-                new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder()
-                        .status("1013")
-                        .message("Помилка під час шифрування.")
-                        .build()).show();
+                new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder().status("1013").message("Помилка під час шифрування.").build()).show();
 
                 Log.e("AuthorizationActivity", "Помилка під час шифрування " + e);
             }
 
         } else {
-            new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder()
-                    .status("0000")
-                    .message("Заповніть будь ласка всі поля.")
-                    .build()).show();
+            new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder().status("0000").message("Заповніть будь ласка всі поля.").build()).show();
         }
     }
 
@@ -180,18 +170,12 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
             String image = Decryptor.decryptText(respond.getImage(), localPrivateKey);
 
             if (userPassword.equals(password) && userEmail.equals(email)) {
-                account = new Account.Builder()
-                        .username(Encryptor.encryptText(username, localPublicKey))
-                        .password(Encryptor.encryptText(userPassword, localPublicKey))
-                        .email(Encryptor.encryptText(userEmail, localPublicKey))
-                        .role(role)
-                        .image(image)
-                        .build();
+                account = new Account.Builder().username(Encryptor.encryptText(username, localPublicKey)).password(Encryptor.encryptText(userPassword, localPublicKey)).email(Encryptor.encryptText(userEmail, localPublicKey)).role(role).image(image).build();
 
                 saveAccount(this, account);
 
                 if (!"coffee_mark.png".equals(account.getImage())) {
-                    Manager.downloadFile(this,image,new ImageHandler(this).getDirFile(image));
+                    Manager.downloadFile(this, image, new ImageHandler(this).getDirFile(image));
                 } else {
                     new AuthorizationDialog(this, "Authorization", " авторизація пройшла успішно!").show();
                 }
@@ -200,6 +184,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
 
         } catch (Exception e) {
             Log.e("AuthorizationActivity", "Помилка під час обробки даних з json " + e);
+            Log.e("AuthorizationActivity", "String" + message);
         }
         login.stopLoading();
     }
@@ -212,9 +197,10 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
     public void onFileError(String message) {
         try {
             LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
-            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())) {
-                Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
-            }
+//            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())
+//                    || "1006".equals(localErrorResponse.getStatus())) {
+//                Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
+//            }
             new ErrorDialog(this, "Authorization", localErrorResponse).show();
             StatusHandler.handleStatus(localErrorResponse.getStatus(), coffeeView);
         } catch (Exception e) {
@@ -261,13 +247,17 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
 
     @Override
     public void onError(String message) {
-        Log.e("AuthorizationActivity", "Authorization onError "+message);
+        Log.e("AuthorizationActivity", "Authorization onError " + message);
         try {
             LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
-            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())) {
+            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())
+                    || "1006".equals(localErrorResponse.getStatus())) {
                 Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
+                Log.e("AuthorizationActivity", "setLocalPublicKey" + getLocalPublicKey());
+
+            } else {
+                new ErrorDialog(this, "Authorization", localErrorResponse).show();
             }
-            new ErrorDialog(this, "Authorization", localErrorResponse).show();
             StatusHandler.handleStatus(localErrorResponse.getStatus(), coffeeView);
         } catch (Exception e) {
             Log.e("AuthorizationActivity", "Помилка під час обробки помилки " + e);
