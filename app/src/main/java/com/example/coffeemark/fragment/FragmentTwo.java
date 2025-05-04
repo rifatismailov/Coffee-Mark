@@ -1,6 +1,7 @@
 package com.example.coffeemark.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -30,7 +31,7 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
     /**
      * Список кавʼярень, які додає користувач.
      */
-    private final List<CafeBase> cafeList = new ArrayList<>();
+    private List<CafeBase> cafeList = new ArrayList<>();
 
     /**
      * Адаптер для відображення списку кавʼярень.
@@ -56,12 +57,16 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
-        for (int i = 0; i < 10; i++) {
-            cafeList.add(new FCafeCart("name cafe " + i, "address cafe " + i, "", 4));
-            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
-        }
         return view;
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void showSearch(List<CafeBase> cafeList) {
+        this.cafeList.clear();
+        this.cafeList.addAll(cafeList);
+        adapter.notifyDataSetChanged();
+    }
+
 
     @Override
     public void onItemClick(CafeBase model) {

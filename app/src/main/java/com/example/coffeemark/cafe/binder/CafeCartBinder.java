@@ -1,6 +1,11 @@
 package com.example.coffeemark.cafe.binder;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.example.coffeemark.R;
@@ -34,6 +39,7 @@ public class CafeCartBinder implements CafeViewHolderBinder<CafeCartViewHolder, 
 
         // Встановлюємо адресу кафе
         holder.cafeAddress.setText(cart.getAddress());
+        holder.amount_of_coffee.setText(cart.getAmount_of_coffee()+" cups of coffee");
 
         // Створюємо список кольорових кружечків (імовірно для відображення кількості кави)
         List<Integer> colors = new ArrayList<>();
@@ -45,8 +51,12 @@ public class CafeCartBinder implements CafeViewHolderBinder<CafeCartViewHolder, 
 
         // Передаємо кольори до кастомного View для відображення
         holder.colorBallsView.setBallColors(colors);
-
-
+        Glide.with(holder.user_image.getContext())
+                .load(imageHandler.getDirFile(cart.getUser_image()))
+                .placeholder(R.drawable.emoticon_shame_smiley) // Можеш задати тимчасову картинку на час завантаження
+                .error(R.drawable.emoticon_cry)              // Картинка при помилці
+                .into(holder.user_image);
+        //imageHandler.getDirFile(AccountManager.getImage(context))
         // Якщо зображення вказано — намагаємося завантажити його та встановити
         // Використовуємо Glide для завантаження зображення
         if (!cart.getCafeImage().isEmpty()) {
@@ -58,5 +68,7 @@ public class CafeCartBinder implements CafeViewHolderBinder<CafeCartViewHolder, 
         } else {
             holder.cafe_image.setImageResource(R.drawable.emoticon_shame_smiley);
         }
+
     }
+
 }

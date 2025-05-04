@@ -1,5 +1,8 @@
 package com.example.coffeemark.cafe;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,6 +108,9 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (holder instanceof CafeCartViewHolder && item instanceof CafeCart) {
             cartBinder.bind((CafeCartViewHolder) holder, (CafeCart) item, imageHandler);
+            holder.itemView.setOnClickListener(v -> {
+                onItemClickListener.onItemClick(item);
+            });
 
         } else if (holder instanceof CafeShopViewHolder && item instanceof CafeShop) {
             shopBinder.bind((CafeShopViewHolder) holder, (CafeShop) item, imageHandler);
@@ -112,9 +118,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             fCartBinder.bind((FCafeCartViewHolder) holder, (FCafeCart) item, imageHandler);
 
         }
-        holder.itemView.setOnClickListener(v -> {
-            onItemClickListener.onItemClick(item);
-        });
+
     }
 
     /**

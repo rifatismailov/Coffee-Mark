@@ -12,7 +12,7 @@ public class RetrofitClient {
     public static Retrofit getClient() {
         String serverUrl = new UrlBuilder.Builder()
                 .setProtocol("http")
-                .setIp("192.168.1.237")
+                .setIp("192.168.177.3")
                 .setPort("8080")
                 .build()
                 .buildUrl();
@@ -25,7 +25,7 @@ public class RetrofitClient {
     public static Retrofit getClientReg() {
         String serverUrl = new UrlBuilder.Builder()
                 .setProtocol("http")
-                .setIp("192.168.1.186")
+                .setIp("192.168.88.252")
                 .setPort("8080")
                 .build()
                 .buildUrl();
@@ -38,7 +38,7 @@ public class RetrofitClient {
     public static Retrofit getClientFS() {
         String serverUrl = new UrlBuilder.Builder()
                 .setProtocol("http")
-                .setIp("192.168.88.253")
+                .setIp("192.168.88.252")
                 .setPort("8020")
                 .build()
                 .buildUrl();

@@ -184,7 +184,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
 
         } catch (Exception e) {
             Log.e("AuthorizationActivity", "Помилка під час обробки даних з json " + e);
-            Log.e("AuthorizationActivity", "String" + message);
+            Log.e("AuthorizationActivity", "String " + message);
         }
         login.stopLoading();
     }
@@ -250,7 +250,8 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
         Log.e("AuthorizationActivity", "Authorization onError " + message);
         try {
             LocalErrorResponse localErrorResponse = new LocalErrorResponse(new JSONObject(message));
-            if ("1002".equals(localErrorResponse.getStatus()) || "1005".equals(localErrorResponse.getStatus())
+            if ("1002".equals(localErrorResponse.getStatus())
+                    || "1005".equals(localErrorResponse.getStatus())
                     || "1006".equals(localErrorResponse.getStatus())) {
                 Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
                 Log.e("AuthorizationActivity", "setLocalPublicKey" + getLocalPublicKey());

@@ -15,11 +15,15 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -37,6 +41,8 @@ import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
 import com.example.coffeemark.cafe.CafeCart;
+import com.example.coffeemark.cafe.CafeShop;
+import com.example.coffeemark.cafe.FCafeCart;
 import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.cafe.CafeBase;
 import com.example.coffeemark.cafe.CafeAdapter;
@@ -126,6 +132,10 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         startActivity(serviceIntent);
     }
 
+    private CustomButton customButton;
+    private EditText searchInput;
+    private FragmentOne fragmentOne;
+    private FragmentTwo fragmentTwo;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -135,14 +145,19 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         setContentView(R.layout.activity_main);
         checkLocalKey(this);
         checkPublicKey(this);
-        CustomButton customButton = findViewById(R.id.request_button);
-      // Дані для вибору
-        String[] searchOptions = {"Name", "Address","Barista","Coffee"};
+        customButton = findViewById(R.id.request_button);
+        searchInput = findViewById(R.id.search_input);
+        setupSearch(searchInput);
+
+        // Дані для вибору
+        String[] searchOptions = {"Name", "Address", "Barista", "Coffee"};
 
         // new DatabaseHelper(this).deleteAllUsers();
         //registerRegistrationActivity();
         startRegistration();
-        replaceFragment(new FragmentOne());
+        fragmentOne = new FragmentOne();
+        fragmentTwo = new FragmentTwo();
+        replaceFragment(fragmentOne);
 
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
@@ -161,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         }
         customButton.setOnClickListener(new View.OnClickListener() {
             PopupWindow popupWindow;
+
             @Override
             public void onClick(View view) {
                 NumberPicker picker = new NumberPicker(MainActivity.this);
@@ -195,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 );
 
                 popupWindow.showAsDropDown(customButton, 0, -customButton.getHeight() * 3);
+                // Явно повертаємо клавіатуру
             }
         });
 
@@ -207,21 +224,18 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     }
 
     public void senRequest() {
-        SearchRequest request = new SearchRequest.Builder()
-                .setUsername("User id 000")
-                .setSearchBy("name")
-                .setSearch("albert")
-                .build();
 
-        Manager.search(this, request);
     }
+
+    private final List<CafeBase> cafeList = new ArrayList<>();
 
     @Override
     public void onSuccess(Object message) {
         try {
-            replaceFragment(new FragmentTwo());
             // створюємо відразу JSONArray
+
             JSONArray responseArray = new JSONArray(message.toString());
+            cafeList.clear();
             // тепер можеш пройтись по елементах масиву
             for (int i = 0; i < responseArray.length(); i++) {
                 JSONObject cafeObject = responseArray.getJSONObject(i);
@@ -229,9 +243,15 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 String name = cafeObject.getString("name");
                 String address = cafeObject.getString("address");
                 String cafeImage = cafeObject.getString("cafe_image");
+                cafeList.add(new FCafeCart(name, address, cafeImage, 4));
 
-                Log.e("MainActivity", "Cafe: id=" + id + ", name=" + name);
             }
+            Log.e("MainActivity", "_________________ ");
+
+            for (CafeBase fCafeCart:cafeList){
+                Log.e("MainActivity", "name "+fCafeCart.getName()+" address "+fCafeCart.getAddress());
+            }
+            fragmentTwo.showSearch(cafeList);
         } catch (Exception e) {
             Log.e("MainActivity", e.toString());
         }
@@ -251,5 +271,63 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     @Override
     public void saveAccount() {
 
+    }
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
+    private static final long DELAY_MS = 100; // затримка 500мс
+
+    private void setupSearch(EditText editText) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Скасовуємо попередній запуск
+                handler.removeCallbacks(searchRunnable);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                final String query = s.toString().trim();
+
+                searchRunnable = () -> {
+                    if (query.isEmpty() || editText.getSelectionStart() == 0) {
+                        cafeList.clear();
+                        replaceFragment(fragmentOne);
+                    } else {
+                        if (!query.startsWith(" ")) {
+                            setSearch(query);
+                            replaceFragment(fragmentTwo);
+                        }
+                    }
+                };
+
+                handler.postDelayed(searchRunnable, DELAY_MS);
+            }
+        });
+    }
+
+
+    public void setSearch(String text) {
+        try {
+            runOnUiThread(() -> {
+                String search = customButton.getText().toString().equals("search") ? "name" : customButton.getText().toString();
+                Log.e("MainActivity", customButton.getText().toString());
+                Log.e("MainActivity", text);
+                SearchRequest request = new SearchRequest.Builder()
+                        .setUsername("User id 000")
+                        .setSearchBy(search)
+                        .setSearch(text)
+                        .build();
+
+                Manager.search(this, request);
+
+            });
+        } catch (Exception e) {
+
+        }
     }
 }

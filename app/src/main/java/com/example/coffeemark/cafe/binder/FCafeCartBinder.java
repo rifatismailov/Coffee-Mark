@@ -36,16 +36,6 @@ public class FCafeCartBinder implements CafeViewHolderBinder<FCafeCartViewHolder
         // Встановлюємо адресу кафе
         holder.cafeAddress.setText(cart.getAddress());
 
-        // Створюємо список кольорових кружечків (імовірно для відображення кількості кави)
-        List<Integer> colors = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            // Якщо кількість кави більша за індекс — використовуємо коричневий колір
-            // Інакше — білий (порожній кружечок)
-            colors.add(i < cart.getAmount_of_coffee() ? 0xFF8F6E4F : 0xFFFFFFFF);
-        }
-
-        // Передаємо кольори до кастомного View для відображення
-        holder.colorBallsView.setBallColors(colors);
 
         // Якщо зображення вказано — намагаємося завантажити його та встановити
         // Використовуємо Glide для завантаження зображення

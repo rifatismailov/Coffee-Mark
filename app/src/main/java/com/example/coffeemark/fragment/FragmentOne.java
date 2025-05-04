@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 
 import com.example.coffeemark.R;
 import com.example.coffeemark.account.AccountManager;
@@ -61,12 +62,14 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
 
     private ImageHandler imageHandler;
     private CustomImageView customImageView;
+    private ScrollView scrollView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_one, container, false);
+        scrollView=view.findViewById(R.id.scrollView2);
         //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
         ViewPager2 viewPager = view.findViewById(R.id.viewPager);
         viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
@@ -99,7 +102,7 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         viewPager.setPageTransformer(transformer);
 
         for (int i = 0; i < 10; i++) {
-            cafeList.add(new CafeCart("name cafe " + i, "address cafe " + i, "coffee_mark.png", 4));
+            cafeList.add(new CafeCart("Kava Love" + i, "м. Одеса вул. Кавова, 7" + i, "coffee_mark.png", AccountManager.getImage(context),6));
             adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
         }
 
@@ -123,22 +126,43 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         currentTimer = new CountDownTimer(15000, 1000) {
 
             public void onTick(long millisUntilFinished) {
+                if (scrollView.getVisibility() != View.VISIBLE) {
+                    fadeIn(scrollView);
+                }
+
                 try {
                     PrivateKey privateKey = loadPrivateKey(context, "user_private.pem");
                     String qrCode = QRCode.generateQRCodeData(context, model.getName(), model.getAddress(), CafeData.getTime(), privateKey);
                     Bitmap bitmap = imageHandler.getBitmap(imageHandler.getDirFile(AccountManager.getImage(context)));
-                    customImageView.setImageBitmap(QRCode.getQRCode(qrCode, bitmap)); // Генерація та встановлення QR-коду
+                    customImageView.setImageBitmap(QRCode.getQRCode(qrCode, bitmap));
                 } catch (Exception e) {
                     Log.e("FragmentOne", "Error onItemClick: " + e);
                 }
             }
 
             public void onFinish() {
+                fadeOut(scrollView);
                 customImageView.setImageBitmap(null);
             }
 
+
         }.start();
     }
+
+    private void fadeIn(View view) {
+        view.setAlpha(0f);
+        view.setVisibility(View.VISIBLE);
+        view.animate().alpha(1f).setDuration(300).start();
+    }
+
+    private void fadeOut(View view) {
+        view.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction(() -> view.setVisibility(View.GONE))
+                .start();
+    }
+
 }
 
 
