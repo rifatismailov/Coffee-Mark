@@ -23,6 +23,8 @@ import android.widget.ScrollView;
 
 import com.example.coffeemark.R;
 import com.example.coffeemark.account.AccountManager;
+import com.example.coffeemark.cart_db.Cart;
+import com.example.coffeemark.cart_db.CartService;
 import com.example.coffeemark.util.QRCode;
 import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.cafe.Cafe;
@@ -36,7 +38,7 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener {
+public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener, Cart {
     private Context context;
     private Cafe model;
     private CountDownTimer currentTimer;  // створюємо змінну класу
@@ -57,13 +59,14 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
     private ImageHandler imageHandler;
     private CustomImageView customImageView;
     private ScrollView scrollView;
+    private CartService cartService;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_one, container, false);
-        scrollView=view.findViewById(R.id.scrollView2);
+        scrollView = view.findViewById(R.id.scrollView2);
         //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
         ViewPager2 viewPager = view.findViewById(R.id.viewPager);
         viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
@@ -77,6 +80,7 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         if (context != null) {
             this.context = context;
             imageHandler = new ImageHandler(context);
+            cartService=new CartService(context);
         }
 
         PublicKey publicKey = loadPublicKey(context, "user_public.pem");
@@ -94,11 +98,11 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
             page.setScaleY(0.85f + r * 0.15f); // Зменшуємо картки позаду
         });
         viewPager.setPageTransformer(transformer);
-
-        for (int i = 0; i < 10; i++) {
-            cafeList.add(new CafeCart("Kava Love" + i, "м. Одеса вул. Кавова, 7" + i, "coffee_mark.png", AccountManager.getImage(context),6));
-            adapter.notifyItemInserted(cafeList.size() - 1); // Оновлюємо RecyclerView
-        }
+        cartService.getCarts(this);
+//        for (int i = 0; i < 10; i++) {
+//            //new CafeCart("Kava Love" + i, "м. Одеса вул. Кавова, 7" + i, "coffee_mark.png", AccountManager.getImage(context),6)
+//
+//        }
 
 
         return view;
@@ -157,6 +161,19 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
                 .start();
     }
 
+    @Override
+    public void cart(CafeCart cart) {
+        requireActivity().runOnUiThread(() -> {
+            cafeList.add(new CafeCart.Builder()
+                    .setName(cart.getName())
+                    .setAddress(cart.getAddress())
+                    .setCafeImage(cart.getCafeImage())
+                    .setUser_image(AccountManager.getImage(context))
+                    .setAmountOfCoffee(cart.getAmount_of_coffee())
+                    .build());
+            adapter.notifyItemInserted(cafeList.size() - 1);
+        });
+    }
 }
 
 

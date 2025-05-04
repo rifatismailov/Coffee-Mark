@@ -33,6 +33,7 @@ import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
 import com.example.coffeemark.cafe.CafeFound;
+import com.example.coffeemark.cart_db.CartService;
 import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.cafe.Cafe;
 import com.example.coffeemark.fragment.FragmentTwo;
@@ -49,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch {
+public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch, CartService.OnCartLoadedListener {
 
     private final BroadcastReceiver registrationAuthorizationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     private String username;
     private String password;
     private String email;
+    private CartService cartService;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         setContentView(R.layout.activity_main);
         checkLocalKey(this);
         checkPublicKey(this);
+        cartService = new CartService(this);
         customButton = findViewById(R.id.request_button);
         searchInput = findViewById(R.id.search_input);
         setupSearch(searchInput);
@@ -219,7 +222,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
             JSONArray responseArray = new JSONArray(message.toString());
             cafeList.clear();
-            // тепер можеш пройтись по елементах масиву
             for (int i = 0; i < responseArray.length(); i++) {
                 JSONObject cafeObject = responseArray.getJSONObject(i);
                 long id = cafeObject.getLong("id");
@@ -227,14 +229,11 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                         .setName(cafeObject.getString("name"))
                         .setAddress(cafeObject.getString("address"))
                         .setCafeImage(cafeObject.getString("cafe_image"))
-                        .setAmountOfCoffee(4)
-                        .setInDatabase(false)
+                        .setAmountOfCoffee(0)
                         .build());
             }
-            for (Cafe fCafeCart : cafeList) {
-                Log.e("MainActivity", "name " + fCafeCart.getName() + " address " + fCafeCart.getAddress());
-            }
-            fragmentTwo.showSearch(cafeList);
+            cartService.getCartFromDatabaseAsync(cafeList, this);
+
         } catch (Exception e) {
             Log.e("MainActivity", e.toString());
         }
@@ -306,6 +305,26 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
                 Manager.search(this, request);
 
+            });
+        } catch (Exception e) {
+            Log.e("MainActivity", e.toString());
+
+        }
+    }
+
+    @Override
+    public void onCartLoaded(CafeFound cart) {
+        cafeList.add(cart);
+        Log.e("FragmentOne", "cart " + cart.getName());
+
+    }
+
+    @Override
+    public void onCartLoaded(List<Cafe> cafeList) {
+        fragmentTwo.showSearch(cafeList);
+        try {
+            runOnUiThread(() -> {
+                fragmentTwo.showSearch(cafeList);
             });
         } catch (Exception e) {
             Log.e("MainActivity", e.toString());

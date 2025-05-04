@@ -1,5 +1,6 @@
 package com.example.coffeemark.cafe.binder;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -23,20 +24,20 @@ public class CafeFoundBinder implements CafeViewHolderBinder<CafeFoundViewHolder
      * @param cart         Об'єкт {@link CafeCart}, який містить інформацію про кафе
      * @param imageHandler Об'єкт для завантаження локальних зображень
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void bind(CafeFoundViewHolder holder, CafeFound cart, ImageHandler imageHandler) {
         // Встановлюємо назву кафе
         holder.cafeName.setText(cart.getName());
 
         // Встановлюємо адресу кафе
-        holder.cafeAddress.setText(cart.getAddress());
-
+        holder.cafeAddress.setText(cart.getAddress());//cups of coffee
+        holder.amount_of_coffee.setText(cart.getAmountOfCoffee()+" cups of coffee");
         if (cart.isInDatabase()) holder.isInDatabase.setImageResource(R.drawable.ic_check_save);
         else holder.isInDatabase.setImageResource(R.drawable.ic_check_not_save);
 
         // Якщо зображення вказано — намагаємося завантажити його та встановити
         // Використовуємо Glide для завантаження зображення
-        Log.e("CafeFoundBinder",imageHandler.getDirFile(cart.getCafeImage()).getPath());
         if (cart.getCafeImage() != null && !cart.getCafeImage().isEmpty()) {
             Glide.with(holder.cafe_image.getContext())
                     .load(imageHandler.getDirFile(cart.getCafeImage()))

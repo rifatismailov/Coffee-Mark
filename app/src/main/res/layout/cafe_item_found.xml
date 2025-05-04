@@ -110,7 +110,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="1 cups of coffee"
+                android:text="0 cups of coffee"
                 android:textColor="#2196F3"
                 android:textSize="14sp" />
 

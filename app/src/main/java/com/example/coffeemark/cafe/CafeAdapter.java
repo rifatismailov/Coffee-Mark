@@ -110,9 +110,12 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         } else if (holder instanceof CafeShopViewHolder && item instanceof CafeShop) {
             shopBinder.bind((CafeShopViewHolder) holder, (CafeShop) item, imageHandler);
+
         } else if (holder instanceof CafeFoundViewHolder && item instanceof CafeFound) {
             fCartBinder.bind((CafeFoundViewHolder) holder, (CafeFound) item, imageHandler);
-
+            holder.itemView.setOnClickListener(v -> {
+                onItemClickListener.onItemClick(item);
+            });
         }
 
     }

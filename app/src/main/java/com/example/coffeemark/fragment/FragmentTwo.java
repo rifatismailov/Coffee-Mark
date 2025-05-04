@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +17,15 @@ import android.view.ViewGroup;
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.cafe.Cafe;
+import com.example.coffeemark.cafe.CafeFound;
+import com.example.coffeemark.cart_db.CartService;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickListener {
+    private CartService cartService;
 
     public FragmentTwo() {
     }
@@ -49,6 +53,7 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
         if (context != null) {
             this.context = context;
             imageHandler = new ImageHandler(context);
+            cartService = new CartService(context);
         }
 
         adapter = new CafeAdapter(cafeList, imageHandler, this);
@@ -68,6 +73,13 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
 
     @Override
     public void onItemClick(Cafe model) {
+        cartService.setCart(new CafeFound.Builder()
+                .setName(model.getName())
+                .setAddress(model.getAddress())
+                .setCafeImage(model.getCafeImage())
+                .setAmountOfCoffee(0)
+                .build());
+        Log.e("MainActivity", model.getName());
 
     }
 }

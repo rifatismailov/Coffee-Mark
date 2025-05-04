@@ -19,6 +19,7 @@ public class CafeFoundViewHolder extends RecyclerView.ViewHolder {
     public final ColorBallsView colorBallsView;
     public final ImageView search;
     public final ImageView isInDatabase;
+    public final TextView amount_of_coffee;
 
 
     public CafeFoundViewHolder(@NonNull View itemView) {
@@ -29,6 +30,7 @@ public class CafeFoundViewHolder extends RecyclerView.ViewHolder {
         colorBallsView = itemView.findViewById(R.id.colorBallsView);
         search= itemView.findViewById(R.id.shear);
         isInDatabase= itemView.findViewById(R.id.isInDatabase);
+        amount_of_coffee= itemView.findViewById(R.id.amount_of_coffee);
     }
 
 
