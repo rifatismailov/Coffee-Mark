@@ -1,18 +1,61 @@
 package com.example.coffeemark.cafe;
 
+
 public class CafeFound extends CafeBase {
 
     private int amount_of_coffee;
-    public CafeFound(String name, String address, String cafe_image, int amount_of_coffee) {
-        super(name, address, cafe_image);
-        this.amount_of_coffee = amount_of_coffee;
+    private boolean isInDatabase; // поле, яке вказує чи обʼєкт в базі
+
+    private CafeFound(Builder builder) {
+        super(builder.name, builder.address, builder.cafe_image);
+        this.amount_of_coffee = builder.amount_of_coffee;
+        this.isInDatabase = builder.isInDatabase;
     }
 
-    public int getAmount_of_coffee() {
+    public int getAmountOfCoffee() {
         return amount_of_coffee;
     }
 
-    public void setAmount_of_coffee(int amount_of_coffee) {
-        this.amount_of_coffee = amount_of_coffee;
+    public boolean isInDatabase() {
+        return isInDatabase;
+    }
+
+    // Builder class
+    public static class Builder {
+        private String name;
+        private String address;
+        private String cafe_image;
+        private int amount_of_coffee;
+        private boolean isInDatabase;
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setAddress(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public Builder setCafeImage(String cafe_image) {
+            this.cafe_image = cafe_image;
+            return this;
+        }
+
+        public Builder setAmountOfCoffee(int amount_of_coffee) {
+            this.amount_of_coffee = amount_of_coffee;
+            return this;
+        }
+
+        public Builder setInDatabase(boolean inDatabase) {
+            isInDatabase = inDatabase;
+            return this;
+        }
+
+        public CafeFound build() {
+            return new CafeFound(this);
+        }
     }
 }
+

@@ -115,12 +115,14 @@
                 android:textSize="14sp" />
 
             <ImageView
+                android:id="@+id/shear"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_share" />
 
             <ImageView
+                android:id="@+id/isInDatabase"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"

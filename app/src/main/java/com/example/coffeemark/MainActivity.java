@@ -223,11 +223,13 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
             for (int i = 0; i < responseArray.length(); i++) {
                 JSONObject cafeObject = responseArray.getJSONObject(i);
                 long id = cafeObject.getLong("id");
-                String name = cafeObject.getString("name");
-                String address = cafeObject.getString("address");
-                String cafeImage = cafeObject.getString("cafe_image");
-                cafeList.add(new CafeFound(name, address, cafeImage, 4));
-
+                cafeList.add(new CafeFound.Builder()
+                        .setName(cafeObject.getString("name"))
+                        .setAddress(cafeObject.getString("address"))
+                        .setCafeImage(cafeObject.getString("cafe_image"))
+                        .setAmountOfCoffee(4)
+                        .setInDatabase(false)
+                        .build());
             }
             for (Cafe fCafeCart : cafeList) {
                 Log.e("MainActivity", "name " + fCafeCart.getName() + " address " + fCafeCart.getAddress());

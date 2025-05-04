@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.binder.CafeCartBinder;
 import com.example.coffeemark.cafe.binder.CafeShopBinder;
-import com.example.coffeemark.cafe.binder.FCafeCartBinder;
+import com.example.coffeemark.cafe.binder.CafeFoundBinder;
 import com.example.coffeemark.cafe.holder.CafeCartViewHolder;
 import com.example.coffeemark.cafe.holder.CafeShopViewHolder;
-import com.example.coffeemark.cafe.holder.FCafeCartViewHolder;
+import com.example.coffeemark.cafe.holder.CafeFoundViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // Об'єкти Binder'ів для різних типів ViewHolder'ів
     private final CafeCartBinder cartBinder = new CafeCartBinder();
     private final CafeShopBinder shopBinder = new CafeShopBinder();
-    private final FCafeCartBinder fCartBinder = new FCafeCartBinder();
+    private final CafeFoundBinder fCartBinder = new CafeFoundBinder();
     // Список елементів для відображення
     private final List<Cafe> items;
 
@@ -88,7 +88,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return new CafeShopViewHolder(view);
         } else {
             View view = inflater.inflate(R.layout.cafe_item_found, parent, false);
-            return new FCafeCartViewHolder(view);
+            return new CafeFoundViewHolder(view);
         }
     }
 
@@ -110,8 +110,8 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         } else if (holder instanceof CafeShopViewHolder && item instanceof CafeShop) {
             shopBinder.bind((CafeShopViewHolder) holder, (CafeShop) item, imageHandler);
-        } else if (holder instanceof FCafeCartViewHolder && item instanceof CafeFound) {
-            fCartBinder.bind((FCafeCartViewHolder) holder, (CafeFound) item, imageHandler);
+        } else if (holder instanceof CafeFoundViewHolder && item instanceof CafeFound) {
+            fCartBinder.bind((CafeFoundViewHolder) holder, (CafeFound) item, imageHandler);
 
         }
 

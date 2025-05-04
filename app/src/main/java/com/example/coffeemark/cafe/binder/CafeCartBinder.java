@@ -31,7 +31,7 @@ public class CafeCartBinder implements CafeViewHolderBinder<CafeCartViewHolder, 
 
         // Встановлюємо адресу кафе
         holder.cafeAddress.setText(cart.getAddress());
-        holder.amount_of_coffee.setText(cart.getAmount_of_coffee()+" cups of coffee");
+        holder.amount_of_coffee.setText(cart.getAmount_of_coffee() + " cups of coffee");
 
         // Створюємо список кольорових кружечків (імовірно для відображення кількості кави)
         List<Integer> colors = new ArrayList<>();
@@ -43,15 +43,19 @@ public class CafeCartBinder implements CafeViewHolderBinder<CafeCartViewHolder, 
 
         // Передаємо кольори до кастомного View для відображення
         holder.colorBallsView.setBallColors(colors);
-        Glide.with(holder.user_image.getContext())
-                .load(imageHandler.getDirFile(cart.getUser_image()))
-                .placeholder(R.drawable.emoticon_shame_smiley) // Можеш задати тимчасову картинку на час завантаження
-                .error(R.drawable.emoticon_cry)              // Картинка при помилці
-                .into(holder.user_image);
-        //imageHandler.getDirFile(AccountManager.getImage(context))
+
+        if (cart.getUser_image() != null && !cart.getUser_image().isEmpty()) {
+            Glide.with(holder.user_image.getContext())
+                    .load(imageHandler.getDirFile(cart.getUser_image()))
+                    .placeholder(R.drawable.emoticon_shame_smiley) // Можеш задати тимчасову картинку на час завантаження
+                    .error(R.drawable.emoticon_cry)              // Картинка при помилці
+                    .into(holder.user_image);
+        } else {
+            holder.cafe_image.setImageResource(R.drawable.emoticon_shame_smiley);
+        }
         // Якщо зображення вказано — намагаємося завантажити його та встановити
         // Використовуємо Glide для завантаження зображення
-        if (!cart.getCafeImage().isEmpty()) {
+        if (cart.getCafeImage() != null && !cart.getCafeImage().isEmpty()) {
             Glide.with(holder.cafe_image.getContext())
                     .load(imageHandler.getDirFile(cart.getCafeImage()))
                     .placeholder(R.drawable.emoticon_shame_smiley) // Можеш задати тимчасову картинку на час завантаження
