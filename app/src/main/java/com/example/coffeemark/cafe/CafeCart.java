@@ -2,9 +2,7 @@ package com.example.coffeemark.cafe;
 
 public class CafeCart extends CafeBase {
 
-    private String name;
-    private String address;
-    private String cafe_image;
+
     private String user_image;
     private int amount_of_coffee;
 

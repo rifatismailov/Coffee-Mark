@@ -32,7 +32,7 @@ import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
-import com.example.coffeemark.cafe.FCafeCart;
+import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.cafe.InCafeBase;
 import com.example.coffeemark.fragment.FragmentTwo;
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 String name = cafeObject.getString("name");
                 String address = cafeObject.getString("address");
                 String cafeImage = cafeObject.getString("cafe_image");
-                cafeList.add(new FCafeCart(name, address, cafeImage, 4));
+                cafeList.add(new CafeFound(name, address, cafeImage, 4));
 
             }
             for (InCafeBase fCafeCart : cafeList) {

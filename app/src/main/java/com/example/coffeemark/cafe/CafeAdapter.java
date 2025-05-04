@@ -65,7 +65,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         InCafeBase item = items.get(position);
         if (item instanceof CafeCart) return TYPE_CART;
         else if (item instanceof CafeShop) return TYPE_SHOP;
-        else if (item instanceof FCafeCart) return TYPE_F_CART;
+        else if (item instanceof CafeFound) return TYPE_F_CART;
         else throw new IllegalStateException("Unknown CafeBase type at position: " + position);
     }
 
@@ -110,8 +110,8 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         } else if (holder instanceof CafeShopViewHolder && item instanceof CafeShop) {
             shopBinder.bind((CafeShopViewHolder) holder, (CafeShop) item, imageHandler);
-        } else if (holder instanceof FCafeCartViewHolder && item instanceof FCafeCart) {
-            fCartBinder.bind((FCafeCartViewHolder) holder, (FCafeCart) item, imageHandler);
+        } else if (holder instanceof FCafeCartViewHolder && item instanceof CafeFound) {
+            fCartBinder.bind((FCafeCartViewHolder) holder, (CafeFound) item, imageHandler);
 
         }
 

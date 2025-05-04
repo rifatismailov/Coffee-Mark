@@ -3,7 +3,7 @@ package com.example.coffeemark.cafe.binder;
 import com.bumptech.glide.Glide;
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeCart;
-import com.example.coffeemark.cafe.FCafeCart;
+import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.cafe.holder.FCafeCartViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
 
@@ -12,7 +12,7 @@ import com.example.coffeemark.util.image.ImageHandler;
  * до відповідного {@link FCafeCartViewHolder} у RecyclerView.
  * Реалізує інтерфейс {@link CafeViewHolderBinder}, забезпечуючи універсальність.
  */
-public class FCafeCartBinder implements CafeViewHolderBinder<FCafeCartViewHolder, FCafeCart> {
+public class FCafeCartBinder implements CafeViewHolderBinder<FCafeCartViewHolder, CafeFound> {
 
     /**
      * Метод прив'язує дані про кафе-картку до візуального відображення у ViewHolder'і.
@@ -22,7 +22,7 @@ public class FCafeCartBinder implements CafeViewHolderBinder<FCafeCartViewHolder
      * @param imageHandler Об'єкт для завантаження локальних зображень
      */
     @Override
-    public void bind(FCafeCartViewHolder holder, FCafeCart cart, ImageHandler imageHandler) {
+    public void bind(FCafeCartViewHolder holder, CafeFound cart, ImageHandler imageHandler) {
         // Встановлюємо назву кафе
         holder.cafeName.setText(cart.getName());
 
