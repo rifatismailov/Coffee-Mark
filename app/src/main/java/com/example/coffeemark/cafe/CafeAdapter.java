@@ -19,7 +19,7 @@ import com.example.coffeemark.util.image.ImageHandler;
 import java.util.List;
 
 /**
- * Адаптер для RecyclerView, який відображає список об'єктів {@link InCafeBase},
+ * Адаптер для RecyclerView, який відображає список об'єктів {@link Cafe},
  * включаючи {@link CafeCart} і {@link CafeShop}.
  * Для кожного типу використовується свій ViewHolder та логіка прив'язки через відповідний Binder.
  */
@@ -35,7 +35,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final CafeShopBinder shopBinder = new CafeShopBinder();
     private final FCafeCartBinder fCartBinder = new FCafeCartBinder();
     // Список елементів для відображення
-    private final List<InCafeBase> items;
+    private final List<Cafe> items;
 
     // Обробник зображень, використовується для завантаження локальних фото
     public ImageHandler imageHandler;
@@ -45,10 +45,10 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /**
      * Конструктор адаптера.
      *
-     * @param items        список елементів {@link InCafeBase}, які буде відображено
+     * @param items        список елементів {@link Cafe}, які буде відображено
      * @param imageHandler об'єкт для завантаження зображень
      */
-    public CafeAdapter(List<InCafeBase> items, ImageHandler imageHandler, OnItemClickListener onItemClickListener) {
+    public CafeAdapter(List<Cafe> items, ImageHandler imageHandler, OnItemClickListener onItemClickListener) {
         this.items = items;
         this.imageHandler = imageHandler;
         this.onItemClickListener = onItemClickListener;
@@ -62,7 +62,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     @Override
     public int getItemViewType(int position) {
-        InCafeBase item = items.get(position);
+        Cafe item = items.get(position);
         if (item instanceof CafeCart) return TYPE_CART;
         else if (item instanceof CafeShop) return TYPE_SHOP;
         else if (item instanceof CafeFound) return TYPE_F_CART;
@@ -100,7 +100,7 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        InCafeBase item = items.get(position);
+        Cafe item = items.get(position);
 
         if (holder instanceof CafeCartViewHolder && item instanceof CafeCart) {
             cartBinder.bind((CafeCartViewHolder) holder, (CafeCart) item, imageHandler);
@@ -130,15 +130,15 @@ public class CafeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /**
      * Додає новий елемент у список і повідомляє RecyclerView про зміну.
      *
-     * @param cafe новий елемент типу {@link InCafeBase}
+     * @param cafe новий елемент типу {@link Cafe}
      */
-    public void addItem(InCafeBase cafe) {
+    public void addItem(Cafe cafe) {
         items.add(cafe);
         notifyItemInserted(items.size() - 1);
     }
 
     public interface OnItemClickListener {
-        void onItemClick(InCafeBase model);
+        void onItemClick(Cafe model);
     }
 
 }

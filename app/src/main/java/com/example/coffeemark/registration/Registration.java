@@ -1,6 +1,6 @@
 package com.example.coffeemark.registration;
 
-import com.example.coffeemark.cafe.InCafeBase;
+import com.example.coffeemark.cafe.Cafe;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class Registration {
     private final String password;
     private final String email;
     private final String role;
-    private final List<InCafeBase> inCafeBaseList;
+    private final List<Cafe> inCafeBaseList;
     private final String image;
     private final String public_key;
     private final String uuid;
@@ -42,7 +42,7 @@ public class Registration {
         return role;
     }
 
-    public List<InCafeBase> getCafeBaseList() {
+    public List<Cafe> getCafeBaseList() {
         return inCafeBaseList;
     }
 
@@ -61,7 +61,7 @@ public class Registration {
         private String password;
         private String email;
         private String role;
-        private List<InCafeBase> inCafeBaseList;
+        private List<Cafe> inCafeBaseList;
         private String image;
         private String public_key;
         private String uuid;
@@ -86,7 +86,7 @@ public class Registration {
             return this;
         }
 
-        public Builder cafes(List<InCafeBase> inCafeBaseList) {
+        public Builder cafes(List<Cafe> inCafeBaseList) {
             this.inCafeBaseList = inCafeBaseList;
             return this;
         }

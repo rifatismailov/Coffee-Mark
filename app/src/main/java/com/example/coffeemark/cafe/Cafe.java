@@ -1,6 +1,6 @@
 package com.example.coffeemark.cafe;
 
-public interface InCafeBase {
+public interface Cafe {
     String getName();
     String getAddress();
     String getCafeImage();

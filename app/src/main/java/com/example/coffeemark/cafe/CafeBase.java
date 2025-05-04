@@ -1,6 +1,6 @@
 package com.example.coffeemark.cafe;
 
-public class CafeBase implements InCafeBase{
+public class CafeBase implements Cafe {
     private final String name;
     private final String address;
     private String cafe_image;
@@ -10,7 +10,6 @@ public class CafeBase implements InCafeBase{
         this.address = address;
         this.cafe_image = cafe_image;
     }
-
 
     @Override
     public String getName() {

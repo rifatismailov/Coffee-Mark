@@ -34,7 +34,7 @@ import com.example.coffeemark.authorization.AuthorizationActivity;
 
 import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.fragment.FragmentOne;
-import com.example.coffeemark.cafe.InCafeBase;
+import com.example.coffeemark.cafe.Cafe;
 import com.example.coffeemark.fragment.FragmentTwo;
 import com.example.coffeemark.service.Manager;
 import com.example.coffeemark.service.search.SearchRequest;
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
     }
 
-    private final List<InCafeBase> cafeList = new ArrayList<>();
+    private final List<Cafe> cafeList = new ArrayList<>();
 
     @Override
     public void onSuccess(Object message) {
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 cafeList.add(new CafeFound(name, address, cafeImage, 4));
 
             }
-            for (InCafeBase fCafeCart : cafeList) {
+            for (Cafe fCafeCart : cafeList) {
                 Log.e("MainActivity", "name " + fCafeCart.getName() + " address " + fCafeCart.getAddress());
             }
             fragmentTwo.showSearch(cafeList);
