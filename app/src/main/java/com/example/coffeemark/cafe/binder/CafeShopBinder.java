@@ -1,14 +1,10 @@
 package com.example.coffeemark.cafe.binder;
 
-import android.util.Log;
-
 import com.bumptech.glide.Glide;
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeShop;
 import com.example.coffeemark.cafe.holder.CafeShopViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
-
-import java.io.IOException;
 
 /**
  * Клас {@code CafeShopBinder} відповідає за прив'язку даних {@link CafeShop}

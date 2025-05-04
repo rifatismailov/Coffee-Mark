@@ -25,26 +25,20 @@ import com.example.coffeemark.R;
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.util.QRCode;
 import com.example.coffeemark.cafe.CafeAdapter;
-import com.example.coffeemark.cafe.CafeBase;
+import com.example.coffeemark.cafe.InCafeBase;
 import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.util.CafeData;
-import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CustomImageView;
 
-import org.json.JSONObject;
-
-import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener {
     private Context context;
-    private CafeBase model;
+    private InCafeBase model;
     private CountDownTimer currentTimer;  // створюємо змінну класу
 
     public FragmentOne() {
@@ -53,7 +47,7 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
     /**
      * Список кавʼярень, які додає користувач.
      */
-    private final List<CafeBase> cafeList = new ArrayList<>();
+    private final List<InCafeBase> cafeList = new ArrayList<>();
 
     /**
      * Адаптер для відображення списку кавʼярень.
@@ -112,11 +106,11 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
 
 
     @Override
-    public void onItemClick(CafeBase model) {
+    public void onItemClick(InCafeBase model) {
         startTimer(model);
     }
 
-    public void startTimer(CafeBase model) {
+    public void startTimer(InCafeBase model) {
         // Якщо попередній таймер працює — зупиняємо його
         if (currentTimer != null) {
             currentTimer.cancel();

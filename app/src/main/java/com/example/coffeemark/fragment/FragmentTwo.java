@@ -15,9 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeAdapter;
-import com.example.coffeemark.cafe.CafeBase;
-import com.example.coffeemark.cafe.CafeCart;
-import com.example.coffeemark.cafe.FCafeCart;
+import com.example.coffeemark.cafe.InCafeBase;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
     /**
      * Список кавʼярень, які додає користувач.
      */
-    private List<CafeBase> cafeList = new ArrayList<>();
+    private List<InCafeBase> cafeList = new ArrayList<>();
 
     /**
      * Адаптер для відображення списку кавʼярень.
@@ -61,7 +59,7 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void showSearch(List<CafeBase> cafeList) {
+    public void showSearch(List<InCafeBase> cafeList) {
         this.cafeList.clear();
         this.cafeList.addAll(cafeList);
         adapter.notifyDataSetChanged();
@@ -69,7 +67,7 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
 
 
     @Override
-    public void onItemClick(CafeBase model) {
+    public void onItemClick(InCafeBase model) {
 
     }
 }

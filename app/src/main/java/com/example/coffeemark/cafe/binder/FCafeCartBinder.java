@@ -1,18 +1,11 @@
 package com.example.coffeemark.cafe.binder;
 
-import android.util.Log;
-
 import com.bumptech.glide.Glide;
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.cafe.FCafeCart;
-import com.example.coffeemark.cafe.holder.CafeCartViewHolder;
 import com.example.coffeemark.cafe.holder.FCafeCartViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Клас {@code CafeCartBinder} відповідає за прив'язку даних {@link CafeCart}

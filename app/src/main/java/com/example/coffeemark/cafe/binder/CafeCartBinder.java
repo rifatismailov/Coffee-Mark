@@ -1,19 +1,11 @@
 package com.example.coffeemark.cafe.binder;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.bumptech.glide.Glide;
 import com.example.coffeemark.R;
 import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.cafe.holder.CafeCartViewHolder;
 import com.example.coffeemark.util.image.ImageHandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

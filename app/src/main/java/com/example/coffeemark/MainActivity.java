@@ -2,16 +2,12 @@ package com.example.coffeemark;
 
 import static com.example.coffeemark.service.Manager.checkPublicKey;
 import static com.example.coffeemark.util.KeyUntil.checkLocalKey;
-import static com.example.coffeemark.util.KeyUntil.getPublicKeyHash;
 import static com.example.coffeemark.util.KeyUntil.loadPrivateKey;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +15,8 @@ import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -40,30 +32,18 @@ import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
-import com.example.coffeemark.cafe.CafeCart;
-import com.example.coffeemark.cafe.CafeShop;
 import com.example.coffeemark.cafe.FCafeCart;
 import com.example.coffeemark.fragment.FragmentOne;
-import com.example.coffeemark.cafe.CafeBase;
-import com.example.coffeemark.cafe.CafeAdapter;
+import com.example.coffeemark.cafe.InCafeBase;
 import com.example.coffeemark.fragment.FragmentTwo;
 import com.example.coffeemark.service.Manager;
-import com.example.coffeemark.service.authorization.AuthorizationRequest;
 import com.example.coffeemark.service.search.SearchRequest;
 import com.example.coffeemark.util.Decryptor;
-import com.example.coffeemark.util.Encryptor;
-import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CustomButton;
-import com.example.coffeemark.view.CustomNumberPicker;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     private EditText searchInput;
     private FragmentOne fragmentOne;
     private FragmentTwo fragmentTwo;
+    private String username;
+    private String password;
+    private String email;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -161,9 +144,9 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
-            String username = Decryptor.decryptText(AccountManager.getUsername(getBaseContext()), privateKey);
-            String password = Decryptor.decryptText(AccountManager.getPassword(getBaseContext()), privateKey);
-            String email = Decryptor.decryptText(AccountManager.getEmail(getBaseContext()), privateKey);
+            username = Decryptor.decryptText(AccountManager.getUsername(getBaseContext()), privateKey);
+            password = Decryptor.decryptText(AccountManager.getPassword(getBaseContext()), privateKey);
+            email = Decryptor.decryptText(AccountManager.getEmail(getBaseContext()), privateKey);
 
             Log.e("MainActivity",
                     username + " "
@@ -227,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
     }
 
-    private final List<CafeBase> cafeList = new ArrayList<>();
+    private final List<InCafeBase> cafeList = new ArrayList<>();
 
     @Override
     public void onSuccess(Object message) {
@@ -246,10 +229,8 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 cafeList.add(new FCafeCart(name, address, cafeImage, 4));
 
             }
-            Log.e("MainActivity", "_________________ ");
-
-            for (CafeBase fCafeCart:cafeList){
-                Log.e("MainActivity", "name "+fCafeCart.getName()+" address "+fCafeCart.getAddress());
+            for (InCafeBase fCafeCart : cafeList) {
+                Log.e("MainActivity", "name " + fCafeCart.getName() + " address " + fCafeCart.getAddress());
             }
             fragmentTwo.showSearch(cafeList);
         } catch (Exception e) {
@@ -315,10 +296,8 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         try {
             runOnUiThread(() -> {
                 String search = customButton.getText().toString().equals("search") ? "name" : customButton.getText().toString();
-                Log.e("MainActivity", customButton.getText().toString());
-                Log.e("MainActivity", text);
                 SearchRequest request = new SearchRequest.Builder()
-                        .setUsername("User id 000")
+                        .setUsername(username)
                         .setSearchBy(search)
                         .setSearch(text)
                         .build();
@@ -327,6 +306,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
             });
         } catch (Exception e) {
+            Log.e("MainActivity", e.toString());
 
         }
     }

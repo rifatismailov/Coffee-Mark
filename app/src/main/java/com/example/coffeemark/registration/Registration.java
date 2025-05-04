@@ -1,7 +1,6 @@
 package com.example.coffeemark.registration;
 
-import com.example.coffeemark.cafe.CafeBase;
-import com.example.coffeemark.service.registration.RegisterRequest;
+import com.example.coffeemark.cafe.InCafeBase;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ public class Registration {
     private final String password;
     private final String email;
     private final String role;
-    private final List<CafeBase> cafeBaseList;
+    private final List<InCafeBase> inCafeBaseList;
     private final String image;
     private final String public_key;
     private final String uuid;
@@ -20,7 +19,7 @@ public class Registration {
         this.password = builder.password;
         this.email = builder.email;
         this.role = builder.role;
-        this.cafeBaseList = builder.cafeBaseList;
+        this.inCafeBaseList = builder.inCafeBaseList;
         this.image = builder.image;
         this.public_key=builder.public_key;
         this.uuid=builder.uuid;
@@ -43,8 +42,8 @@ public class Registration {
         return role;
     }
 
-    public List<CafeBase> getCafeBaseList() {
-        return cafeBaseList;
+    public List<InCafeBase> getCafeBaseList() {
+        return inCafeBaseList;
     }
 
     public String getImage() {
@@ -62,7 +61,7 @@ public class Registration {
         private String password;
         private String email;
         private String role;
-        private List<CafeBase> cafeBaseList;
+        private List<InCafeBase> inCafeBaseList;
         private String image;
         private String public_key;
         private String uuid;
@@ -87,8 +86,8 @@ public class Registration {
             return this;
         }
 
-        public Builder cafes(List<CafeBase> cafeBaseList) {
-            this.cafeBaseList = cafeBaseList;
+        public Builder cafes(List<InCafeBase> inCafeBaseList) {
+            this.inCafeBaseList = inCafeBaseList;
             return this;
         }
 

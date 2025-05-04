@@ -29,7 +29,7 @@ import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.Respond;
 import com.example.coffeemark.dialog.AuthorizationDialog;
 import com.example.coffeemark.dialog.ErrorDialog;
-import com.example.coffeemark.cafe.CafeBase;
+import com.example.coffeemark.cafe.InCafeBase;
 import com.example.coffeemark.cafe.CafeShop;
 import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.service.Manager;
@@ -128,8 +128,8 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
     /**
      * Список кавʼярень, які додає користувач.
      */
-    private final List<CafeBase> cafeShopList_for_Server = new ArrayList<>();
-    private final List<CafeBase> cafeShopList_for_App = new ArrayList<>();
+    private final List<InCafeBase> cafeShopList_for_Server = new ArrayList<>();
+    private final List<InCafeBase> cafeShopList_for_App = new ArrayList<>();
 
 
     /**
@@ -289,7 +289,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
             registerButton.onPress("Please wait");
 
             // Створюємо список кафе, який буде передано в запит
-            List<CafeBase> cafes = roleSpinner.getSelectedItem().toString().equals("BARISTA") ? cafeShopList_for_Server : new ArrayList<>();
+            List<InCafeBase> cafes = roleSpinner.getSelectedItem().toString().equals("BARISTA") ? cafeShopList_for_Server : new ArrayList<>();
 
             // Створення об'єкта RegisterRequest
             RegisterRequest request = new RegisterRequest.Builder()
@@ -350,7 +350,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
             File savedFile = imageHandler.processAndSaveImage(uri);
             image = imageHandler.getSavedFileName();
             if (!cafeShopList_for_Server.isEmpty()) {
-                for (CafeBase cafe : cafeShopList_for_Server) {
+                for (InCafeBase cafe : cafeShopList_for_Server) {
                     cafe.setCafeImage(image);
                 }
                 adapter.notifyDataSetChanged(); // Оновлюємо весь список
@@ -525,7 +525,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
     }
 
     @Override
-    public void onItemClick(CafeBase model) {
+    public void onItemClick(InCafeBase model) {
 
     }
 }
