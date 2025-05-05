@@ -88,6 +88,7 @@ public class CartService {
                         .setName(cafeFound.getName())
                         .setAddress(cafeFound.getAddress())
                         .setCafeImage(cafeFound.getCafeImage())
+                        .setUser_image(AccountManager.getImage(context))
                         .setAmountOfCoffee(0)
                         .setInDatabase(false)
                         .build();

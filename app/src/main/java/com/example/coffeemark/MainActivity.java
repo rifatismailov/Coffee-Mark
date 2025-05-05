@@ -227,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                         .setAmountOfCoffee(0)
                         .build());
             }
+
             cartService.getCartFromDatabaseAsync(cafeList, this);
 
         } catch (Exception e) {

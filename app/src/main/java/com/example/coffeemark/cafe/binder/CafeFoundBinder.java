@@ -60,6 +60,5 @@ public class CafeFoundBinder implements CafeViewHolderBinder<CafeFoundViewHolder
         } else {
             holder.cafe_image.setImageResource(R.drawable.emoticon_shame_smiley);
         }
-
     }
 }
