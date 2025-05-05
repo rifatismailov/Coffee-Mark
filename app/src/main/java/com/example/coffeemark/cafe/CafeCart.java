@@ -1,5 +1,9 @@
 package com.example.coffeemark.cafe;
 
+import android.util.Log;
+
+import java.util.Objects;
+
 public class CafeCart extends CafeBase {
 
     private int id; // Унікальний ідентифікатор кожного запису (автоінкремент)
@@ -69,4 +73,25 @@ public class CafeCart extends CafeBase {
             return new CafeCart(this);
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        CafeCart that = (CafeCart) obj;
+
+        return id == that.id &&
+                amount_of_coffee == that.amount_of_coffee &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getAddress(), that.getAddress()) &&
+                Objects.equals(getCafeImage(), that.getCafeImage()) &&
+                Objects.equals(getUser_image(), that.getUser_image());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, getName(), getAddress(), getCafeImage(), getUser_image(), amount_of_coffee);
+    }
+
 }

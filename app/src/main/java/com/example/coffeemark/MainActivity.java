@@ -32,6 +32,7 @@ import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
 
 
+import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.cart_db.CartService;
 import com.example.coffeemark.fragment.FragmentOne;
@@ -50,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch, CartService.OnCartLoadedListener {
+public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch, CartService.Service.OnCartLoadedListListener, FragmentTwo.OnCartListener {
 
     private final BroadcastReceiver registrationAuthorizationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -115,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
     private CustomButton customButton;
     private EditText searchInput;
-    private FragmentOne fragmentOne;
     private FragmentTwo fragmentTwo;
     private String username;
     private String password;
@@ -141,9 +141,8 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         // new DatabaseHelper(this).deleteAllUsers();
         //registerRegistrationActivity();
         startRegistration();
-        fragmentOne = new FragmentOne();
-        fragmentTwo = new FragmentTwo();
-        replaceFragment(fragmentOne);
+        fragmentTwo = new FragmentTwo(this);
+        replaceFragment(new FragmentOne());
 
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
@@ -207,10 +206,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayout, fragment);
         transaction.commit();
-    }
-
-    public void senRequest() {
-
     }
 
     private final List<Cafe> cafeList = new ArrayList<>();
@@ -278,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                 searchRunnable = () -> {
                     if (query.isEmpty() || editText.getSelectionStart() == 0) {
                         cafeList.clear();
-                        replaceFragment(fragmentOne);
+                        replaceFragment(new FragmentOne());
                     } else {
                         if (!query.startsWith(" ")) {
                             setSearch(query);
@@ -312,12 +307,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         }
     }
 
-    @Override
-    public void onCartLoaded(CafeFound cart) {
-        cafeList.add(cart);
-        Log.e("FragmentOne", "cart " + cart.getName());
-
-    }
 
     @Override
     public void onCartLoaded(List<Cafe> cafeList) {
@@ -328,7 +317,11 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
             });
         } catch (Exception e) {
             Log.e("MainActivity", e.toString());
-
         }
+    }
+
+    @Override
+    public void onItemClick(CafeCart cart) {
+        replaceFragment(new FragmentOne(cart));
     }
 }

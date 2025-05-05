@@ -15,47 +15,48 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.coffeemark.R;
+import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.cafe.Cafe;
+import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.cart_db.CartService;
+import com.example.coffeemark.cart_db.UserCart;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickListener {
-    private CartService cartService;
+    private final CartService cartService;
 
-    public FragmentTwo() {
-    }
 
     /**
      * Список кавʼярень, які додає користувач.
      */
-    private List<Cafe> cafeList = new ArrayList<>();
+    private final List<Cafe> cafeList = new ArrayList<>();
 
     /**
      * Адаптер для відображення списку кавʼярень.
      */
     private CafeAdapter adapter;
 
-    private ImageHandler imageHandler;
-    private Context context;
+    private final ImageHandler imageHandler;
+    private final Context context;
+    private OnCartListener onCartListener;
+
+    public FragmentTwo(Context context) {
+        this.context = context;
+        imageHandler = new ImageHandler(context);
+        cartService = new CartService(context);
+        this.onCartListener = (OnCartListener) context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_two, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.cafeSearchCards);
-
-        Context context = getContext();
-        if (context != null) {
-            this.context = context;
-            imageHandler = new ImageHandler(context);
-            cartService = new CartService(context);
-        }
-
         adapter = new CafeAdapter(cafeList, imageHandler, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
@@ -73,14 +74,27 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
 
     @Override
     public void onItemClick(Cafe model) {
-        cartService.setCart(new CafeFound.Builder()
+        CafeFound cafeFound = new CafeFound.Builder()
                 .setName(model.getName())
                 .setAddress(model.getAddress())
                 .setCafeImage(model.getCafeImage())
                 .setAmountOfCoffee(0)
-                .build());
-        Log.e("MainActivity", model.getName());
+                .build();
+        new Thread(() -> {
+            CafeCart cafeCart = cartService.isInDatabase(cafeFound);
+            if (cafeCart != null) {
+                onCartListener.onItemClick(cafeCart);
+            } else {
+                cartService.setCart(cafeFound);
+                Log.e("FragmentTwo", "save " + model.getName());
+            }
+        }).start();
 
+    }
+
+
+    public interface OnCartListener {
+        void onItemClick(CafeCart cart);
     }
 }
 

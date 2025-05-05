@@ -40,12 +40,10 @@ import java.util.List;
 
 public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener, Cart {
     private Context context;
-    private Cafe model;
+    private CafeCart cart;
     private CountDownTimer currentTimer;  // створюємо змінну класу
 
-    public FragmentOne() {
-    }
-
+    private ViewPager2 viewPager;
     /**
      * Список кавʼярень, які додає користувач.
      */
@@ -60,6 +58,16 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
     private CustomImageView customImageView;
     private ScrollView scrollView;
     private CartService cartService;
+    private PublicKey publicKey;
+    private PrivateKey privateKey;
+
+    public FragmentOne() {
+
+    }
+
+    public FragmentOne(CafeCart cart) {
+        this.cart = cart;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +76,7 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         View view = inflater.inflate(R.layout.fragment_one, container, false);
         scrollView = view.findViewById(R.id.scrollView2);
         //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
-        ViewPager2 viewPager = view.findViewById(R.id.viewPager);
+        viewPager = view.findViewById(R.id.viewPager);
         viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
         viewPager.setClipToPadding(false);
         viewPager.setClipChildren(false);
@@ -79,13 +87,13 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         Context context = getContext();
         if (context != null) {
             this.context = context;
-            imageHandler = new ImageHandler(context);
-            cartService=new CartService(context);
+            publicKey = loadPublicKey(context, "user_public.pem");
+            privateKey = loadPrivateKey(context, "user_private.pem");
+            imageHandler = new ImageHandler(getContext());
+            cartService = new CartService(getContext());
+            customImageView = view.findViewById(R.id.showQr);
         }
 
-        PublicKey publicKey = loadPublicKey(context, "user_public.pem");
-
-        customImageView = view.findViewById(R.id.showQr);
 
         adapter = new CafeAdapter(cafeList, imageHandler, this);
         viewPager.setAdapter(adapter);
@@ -99,13 +107,17 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         });
         viewPager.setPageTransformer(transformer);
         cartService.getCarts(this);
-//        for (int i = 0; i < 10; i++) {
-//            //new CafeCart("Kava Love" + i, "м. Одеса вул. Кавова, 7" + i, "coffee_mark.png", AccountManager.getImage(context),6)
-//
-//        }
 
-
+        if (cart != null) {
+            setCart(cart);
+        }
         return view;
+    }
+
+    public void setCart(CafeCart cart) {
+        cafeList.add(cart);
+        adapter.notifyItemInserted(cafeList.size() - 1);
+        startTimer(cart);
     }
 
 
@@ -129,7 +141,6 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
                 }
 
                 try {
-                    PrivateKey privateKey = loadPrivateKey(context, "user_private.pem");
                     String qrCode = QRCode.generateQRCodeData(context, model.getName(), model.getAddress(), CafeData.getTime(), privateKey);
                     Bitmap bitmap = imageHandler.getBitmap(imageHandler.getDirFile(AccountManager.getImage(context)));
                     customImageView.setImageBitmap(QRCode.getQRCode(qrCode, bitmap));
@@ -162,16 +173,18 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
     }
 
     @Override
-    public void cart(CafeCart cart) {
+    public void cart(CafeCart newCart) {
         requireActivity().runOnUiThread(() -> {
-            cafeList.add(new CafeCart.Builder()
-                    .setName(cart.getName())
-                    .setAddress(cart.getAddress())
-                    .setCafeImage(cart.getCafeImage())
-                    .setUser_image(AccountManager.getImage(context))
-                    .setAmountOfCoffee(cart.getAmount_of_coffee())
-                    .build());
-            adapter.notifyItemInserted(cafeList.size() - 1);
+            if (!newCart.equals(cart)) {
+                cafeList.add(new CafeCart.Builder()
+                        .setName(newCart.getName())
+                        .setAddress(newCart.getAddress())
+                        .setCafeImage(newCart.getCafeImage())
+                        .setUser_image(AccountManager.getImage(context))
+                        .setAmountOfCoffee(newCart.getAmount_of_coffee())
+                        .build());
+                adapter.notifyItemInserted(cafeList.size() - 1);
+            }
         });
     }
 }
