@@ -83,6 +83,12 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
                     public void onYes() {
                         // Реакція на "Так"
                         Log.e("MainActivity", "Користувач підтвердив дію");
+                        //                cartService.setCart( new CafeFound.Builder()
+//                        .setName(model.getName())
+//                        .setAddress(model.getAddress())
+//                        .setCafeImage(model.getCafeImage())
+//                        .setAmountOfCoffee(0)
+//                        .build());
                     }
 
                     @Override
@@ -94,12 +100,7 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
 
                 dialog.show(getParentFragmentManager(), "ConfirmDialog");
 
-//                cartService.setCart( new CafeFound.Builder()
-//                        .setName(model.getName())
-//                        .setAddress(model.getAddress())
-//                        .setCafeImage(model.getCafeImage())
-//                        .setAmountOfCoffee(0)
-//                        .build());
+
             }
         }).start();
     }
