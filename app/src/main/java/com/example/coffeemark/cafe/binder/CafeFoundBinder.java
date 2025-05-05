@@ -46,7 +46,7 @@ public class CafeFoundBinder implements CafeViewHolderBinder<CafeFoundViewHolder
             }
         } else {
             holder.isInDatabase.setImageResource(R.drawable.ic_check_not_save);
-            holder.user_image.setImageResource(R.drawable.emoticon_cry);
+            holder.user_image.setImageResource(R.drawable.emoticon_glas_smiley);
         }
 
         // Якщо зображення вказано — намагаємося завантажити його та встановити

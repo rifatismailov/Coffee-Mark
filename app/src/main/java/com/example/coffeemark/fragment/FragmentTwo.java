@@ -20,6 +20,7 @@ import com.example.coffeemark.cafe.Cafe;
 import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.cart_db.CartService;
+import com.example.coffeemark.dialog.ConfirmDialogFragment;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.ArrayList;
@@ -77,12 +78,28 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
             if (cafeCart != null) {
                 onCartListener.onItemClick(cafeCart);
             } else {
-                cartService.setCart( new CafeFound.Builder()
-                        .setName(model.getName())
-                        .setAddress(model.getAddress())
-                        .setCafeImage(model.getCafeImage())
-                        .setAmountOfCoffee(0)
-                        .build());
+                ConfirmDialogFragment dialog = new ConfirmDialogFragment("Чи бажаєте зберегкти картку?", new ConfirmDialogFragment.Select() {
+                    @Override
+                    public void onYes() {
+                        // Реакція на "Так"
+                        Log.e("MainActivity", "Користувач підтвердив дію");
+                    }
+
+                    @Override
+                    public void onNo() {
+                        // Реакція на "Ні"
+                        Log.e("MainActivity", "Користувач скасував дію");
+                    }
+                });
+
+                dialog.show(getParentFragmentManager(), "ConfirmDialog");
+
+//                cartService.setCart( new CafeFound.Builder()
+//                        .setName(model.getName())
+//                        .setAddress(model.getAddress())
+//                        .setCafeImage(model.getCafeImage())
+//                        .setAmountOfCoffee(0)
+//                        .build());
             }
         }).start();
     }
