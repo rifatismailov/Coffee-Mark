@@ -32,9 +32,22 @@ public class CafeFoundBinder implements CafeViewHolderBinder<CafeFoundViewHolder
 
         // Встановлюємо адресу кафе
         holder.cafeAddress.setText(cart.getAddress());//cups of coffee
-        holder.amount_of_coffee.setText(cart.getAmountOfCoffee()+" cups of coffee");
-        if (cart.isInDatabase()) holder.isInDatabase.setImageResource(R.drawable.ic_check_save);
-        else holder.isInDatabase.setImageResource(R.drawable.ic_check_not_save);
+        holder.amount_of_coffee.setText(cart.getAmountOfCoffee() + " cups of coffee");
+        if (cart.isInDatabase()) {
+            holder.isInDatabase.setImageResource(R.drawable.ic_check_save);
+            if (cart.getUser_image() != null && !cart.getUser_image().isEmpty()) {
+                Glide.with(holder.user_image.getContext())
+                        .load(imageHandler.getDirFile(cart.getUser_image()))
+                        .placeholder(R.drawable.emoticon_shame_smiley) // Можеш задати тимчасову картинку на час завантаження
+                        .error(R.drawable.emoticon_cry)              // Картинка при помилці
+                        .into(holder.user_image);
+            } else {
+                holder.user_image.setImageResource(R.drawable.emoticon_shame_smiley);
+            }
+        } else {
+            holder.isInDatabase.setImageResource(R.drawable.ic_check_not_save);
+            holder.user_image.setImageResource(R.drawable.emoticon_cry);
+        }
 
         // Якщо зображення вказано — намагаємося завантажити його та встановити
         // Використовуємо Glide для завантаження зображення

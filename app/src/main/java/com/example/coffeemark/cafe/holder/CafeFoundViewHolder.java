@@ -16,6 +16,7 @@ public class CafeFoundViewHolder extends RecyclerView.ViewHolder {
     public final TextView cafeName;
     public final TextView cafeAddress;
     public final CoffeeView cafe_image;
+    public final CoffeeView user_image;
     public final ColorBallsView colorBallsView;
     public final ImageView search;
     public final ImageView isInDatabase;
@@ -27,10 +28,11 @@ public class CafeFoundViewHolder extends RecyclerView.ViewHolder {
         cafeName = itemView.findViewById(R.id.cafe_real_name);
         cafeAddress = itemView.findViewById(R.id.cafe_real_address);
         cafe_image = itemView.findViewById(R.id.cafe_image);
+        user_image = itemView.findViewById(R.id.user_image);
         colorBallsView = itemView.findViewById(R.id.colorBallsView);
-        search= itemView.findViewById(R.id.shear);
-        isInDatabase= itemView.findViewById(R.id.isInDatabase);
-        amount_of_coffee= itemView.findViewById(R.id.amount_of_coffee);
+        search = itemView.findViewById(R.id.shear);
+        isInDatabase = itemView.findViewById(R.id.isInDatabase);
+        amount_of_coffee = itemView.findViewById(R.id.amount_of_coffee);
     }
 
 

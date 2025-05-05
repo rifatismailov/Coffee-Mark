@@ -310,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
     @Override
     public void onCartLoaded(List<Cafe> cafeList) {
-        fragmentTwo.showSearch(cafeList);
         try {
             runOnUiThread(() -> {
                 fragmentTwo.showSearch(cafeList);

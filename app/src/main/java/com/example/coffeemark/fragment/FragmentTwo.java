@@ -15,13 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.coffeemark.R;
-import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.cafe.CafeAdapter;
 import com.example.coffeemark.cafe.Cafe;
 import com.example.coffeemark.cafe.CafeCart;
 import com.example.coffeemark.cafe.CafeFound;
 import com.example.coffeemark.cart_db.CartService;
-import com.example.coffeemark.cart_db.UserCart;
 import com.example.coffeemark.util.image.ImageHandler;
 
 import java.util.ArrayList;
@@ -74,22 +72,19 @@ public class FragmentTwo extends Fragment implements CafeAdapter.OnItemClickList
 
     @Override
     public void onItemClick(Cafe model) {
-        CafeFound cafeFound = new CafeFound.Builder()
-                .setName(model.getName())
-                .setAddress(model.getAddress())
-                .setCafeImage(model.getCafeImage())
-                .setAmountOfCoffee(0)
-                .build();
         new Thread(() -> {
-            CafeCart cafeCart = cartService.isInDatabase(cafeFound);
+            CafeCart cafeCart = cartService.isReturnInDatabase(model);
             if (cafeCart != null) {
                 onCartListener.onItemClick(cafeCart);
             } else {
-                cartService.setCart(cafeFound);
-                Log.e("FragmentTwo", "save " + model.getName());
+                cartService.setCart( new CafeFound.Builder()
+                        .setName(model.getName())
+                        .setAddress(model.getAddress())
+                        .setCafeImage(model.getCafeImage())
+                        .setAmountOfCoffee(0)
+                        .build());
             }
         }).start();
-
     }
 
 

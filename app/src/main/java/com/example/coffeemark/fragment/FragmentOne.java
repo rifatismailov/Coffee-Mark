@@ -2,7 +2,6 @@ package com.example.coffeemark.fragment;
 
 
 import static com.example.coffeemark.util.KeyUntil.loadPrivateKey;
-import static com.example.coffeemark.util.KeyUntil.loadPublicKey;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,7 +22,6 @@ import android.widget.ScrollView;
 
 import com.example.coffeemark.R;
 import com.example.coffeemark.account.AccountManager;
-import com.example.coffeemark.cart_db.Cart;
 import com.example.coffeemark.cart_db.CartService;
 import com.example.coffeemark.util.QRCode;
 import com.example.coffeemark.cafe.CafeAdapter;
@@ -34,107 +32,129 @@ import com.example.coffeemark.util.image.ImageHandler;
 import com.example.coffeemark.view.CustomImageView;
 
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener, Cart {
-    private Context context;
-    private CafeCart cart;
-    private CountDownTimer currentTimer;  // створюємо змінну класу
+/**
+ * Фрагмент, який відповідає за відображення списку кав'ярень у вигляді карток (ViewPager2),
+ * генерацію QR-коду для вибраної кавʼярні та взаємодію з локальною базою даних (CartService).
+ */
+public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickListener, CartService.Service.Cart {
 
+    /** Поточний контекст фрагмента */
+    private Context context;
+
+    /** Поточна активна картка, передана з пошуку */
+    private CafeCart cart;
+
+    /** Таймер для показу QR-коду */
+    private CountDownTimer currentTimer;
+
+    /** ViewPager2 для вертикального скролу карток */
     private ViewPager2 viewPager;
-    /**
-     * Список кавʼярень, які додає користувач.
-     */
+
+    /** Список кавʼярень, які відображаються */
     private final List<Cafe> cafeList = new ArrayList<>();
 
-    /**
-     * Адаптер для відображення списку кавʼярень.
-     */
+    /** Адаптер для ViewPager2 */
     private CafeAdapter adapter;
 
+    /** Обробник зображень для QR-коду */
     private ImageHandler imageHandler;
+
+    /** Кастомне ImageView для показу QR-коду */
     private CustomImageView customImageView;
+
+    /** ScrollView з додатковою інформацією */
     private ScrollView scrollView;
+
+    /** Сервіс роботи з локальною базою даних */
     private CartService cartService;
-    private PublicKey publicKey;
+
+    /** Приватний ключ для шифрування QR-коду */
     private PrivateKey privateKey;
 
-    public FragmentOne() {
+    /** Конструктор без параметрів (обов’язковий для Fragment) */
+    public FragmentOne() {}
 
-    }
-
+    /** Конструктор з передачею картки для попереднього завантаження */
     public FragmentOne(CafeCart cart) {
         this.cart = cart;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_one, container, false);
         scrollView = view.findViewById(R.id.scrollView2);
-        //RecyclerView recyclerView = findViewById(R.id.mainCafeList);
         viewPager = view.findViewById(R.id.viewPager);
-        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
-        viewPager.setClipToPadding(false);
-        viewPager.setClipChildren(false);
-        viewPager.setPadding(0, 0, 0, 100); // Збільшення відступу знизу
-        viewPager.setOffscreenPageLimit(3);
-        viewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+
+        setupViewPager();
 
         Context context = getContext();
         if (context != null) {
             this.context = context;
-            publicKey = loadPublicKey(context, "user_public.pem");
             privateKey = loadPrivateKey(context, "user_private.pem");
-            imageHandler = new ImageHandler(getContext());
-            cartService = new CartService(getContext());
+            imageHandler = new ImageHandler(context);
+            cartService = new CartService(context);
             customImageView = view.findViewById(R.id.showQr);
         }
-
 
         adapter = new CafeAdapter(cafeList, imageHandler, this);
         viewPager.setAdapter(adapter);
 
-        CompositePageTransformer transformer = new CompositePageTransformer();
-        transformer.addTransformer(new MarginPageTransformer(40));
-        transformer.addTransformer((page, position) -> {
-            // Налаштування масштабу елементів
-            float r = 1 - Math.abs(position);
-            page.setScaleY(0.85f + r * 0.15f); // Зменшуємо картки позаду
-        });
-        viewPager.setPageTransformer(transformer);
         cartService.getCarts(this);
 
         if (cart != null) {
             setCart(cart);
         }
+
         return view;
     }
 
+    /**
+     * Налаштовує ViewPager2 з трансформерами і властивостями.
+     */
+    private void setupViewPager() {
+        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
+        viewPager.setClipToPadding(false);
+        viewPager.setClipChildren(false);
+        viewPager.setPadding(0, 0, 0, 100);
+        viewPager.setOffscreenPageLimit(3);
+        viewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+
+        CompositePageTransformer transformer = new CompositePageTransformer();
+        transformer.addTransformer(new MarginPageTransformer(40));
+        transformer.addTransformer((page, position) -> {
+            float r = 1 - Math.abs(position);
+            page.setScaleY(0.85f + r * 0.15f);
+        });
+        viewPager.setPageTransformer(transformer);
+    }
+
+    /**
+     * Додає картку у список і запускає таймер з показом QR.
+     */
     public void setCart(CafeCart cart) {
         cafeList.add(cart);
         adapter.notifyItemInserted(cafeList.size() - 1);
         startTimer(cart);
     }
 
-
     @Override
     public void onItemClick(Cafe model) {
         startTimer(model);
     }
 
+    /**
+     * Запускає таймер з оновленням QR-коду щосекунди.
+     * @param model Кавʼярня для якої генерується QR-код
+     */
     public void startTimer(Cafe model) {
-        // Якщо попередній таймер працює — зупиняємо його
         if (currentTimer != null) {
             currentTimer.cancel();
         }
 
-        // Створюємо новий таймер
         currentTimer = new CountDownTimer(15000, 1000) {
-
             public void onTick(long millisUntilFinished) {
                 if (scrollView.getVisibility() != View.VISIBLE) {
                     fadeIn(scrollView);
@@ -153,8 +173,6 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
                 fadeOut(scrollView);
                 customImageView.setImageBitmap(null);
             }
-
-
         }.start();
     }
 
@@ -172,8 +190,13 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
                 .start();
     }
 
+    /**
+     * Метод, що викликається після завантаження даних з бази (реалізація Cart).
+     * @param newCart Картка, яку потрібно додати у список, якщо її ще немає
+     */
+
     @Override
-    public void cart(CafeCart newCart) {
+    public void showCart(CafeCart newCart) {
         requireActivity().runOnUiThread(() -> {
             if (!newCart.equals(cart)) {
                 cafeList.add(new CafeCart.Builder()
@@ -188,5 +211,6 @@ public class FragmentOne extends Fragment implements CafeAdapter.OnItemClickList
         });
     }
 }
+
 
 
