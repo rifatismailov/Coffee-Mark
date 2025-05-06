@@ -1,6 +1,6 @@
 package com.example.coffeemark;
 
-import static com.example.coffeemark.service.Manager.checkPublicKey;
+import static com.example.coffeemark.service.manager.KeyManager.checkPublicKey;
 import static com.example.coffeemark.util.KeyUntil.checkLocalKey;
 import static com.example.coffeemark.util.KeyUntil.loadPrivateKey;
 
@@ -10,20 +10,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.PopupWindow;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -31,7 +21,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
@@ -46,10 +35,9 @@ import com.example.coffeemark.fragment.FragmentTwo;
 import com.example.coffeemark.option.ScrollPickerAdapter;
 import com.example.coffeemark.search.CenterSnapScrollListener;
 import com.example.coffeemark.search.Watcher;
-import com.example.coffeemark.service.Manager;
+import com.example.coffeemark.service.manager.SearchManager;
 import com.example.coffeemark.service.search.SearchRequest;
 import com.example.coffeemark.util.Decryptor;
-import com.example.coffeemark.view.CustomButton;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch, CartService.Service.OnCartLoadedListListener, FragmentTwo.OnCartListener, Watcher.OnWatcher {
+public class MainActivity extends AppCompatActivity implements SearchManager.Search, CartService.Service.OnCartLoadedListListener, FragmentTwo.OnCartListener, Watcher.OnWatcher {
 
     private final BroadcastReceiver registrationAuthorizationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -120,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         startActivity(serviceIntent);
     }
 
-    private CustomButton customButton;
     private EditText searchInput;
     private FragmentTwo fragmentTwo;
     private String username;
@@ -227,16 +214,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     }
 
     @Override
-    public void messageToActivity(String message) {
-
-    }
-
-    @Override
-    public void saveAccount() {
-
-    }
-
-    @Override
     public void onCartLoaded(List<Cafe> cafeList) {
         runOnUiThread(() -> fragmentTwo.showSearch(cafeList));
     }
@@ -262,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                     .setSearch(text)
                     .build();
 
-            Manager.search(this, request);
+            SearchManager.search(this, request);
         });
 
     }

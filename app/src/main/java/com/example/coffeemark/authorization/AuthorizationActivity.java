@@ -23,8 +23,10 @@ import com.example.coffeemark.dialog.ErrorDialog;
 import com.example.coffeemark.dialog.StatusHandler;
 import com.example.coffeemark.registration.FieldValidator;
 import com.example.coffeemark.registration.RegistrationActivity;
-import com.example.coffeemark.service.Manager;
+import com.example.coffeemark.service.manager.FileTransferManager;
 import com.example.coffeemark.service.authorization.AuthorizationRequest;
+import com.example.coffeemark.service.manager.AuthManager;
+import com.example.coffeemark.service.manager.KeyManager;
 import com.example.coffeemark.service.public_key.LocalPublicKeyRequest;
 import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
@@ -50,7 +52,7 @@ import java.util.UUID;
  *
  * <p>Реалізує інтерфейси:
  * <ul>
- *   <li>{@link Manager.MessageAuthorization} — для отримання результату авторизації</li>
+ *   <li>{@link FileTransferManager.MessageAuthorization} — для отримання результату авторизації</li>
  *   <li>{@link AuthorizationDialog.Authorization} — для подальшої обробки після успішної авторизації</li>
  * </ul>
  * </p>
@@ -58,7 +60,7 @@ import java.util.UUID;
  * @author Ріфат Ісмаїлов
  */
 
-public class AuthorizationActivity extends AppCompatActivity implements Manager.MessageAuthorization, AuthorizationDialog.Authorization, Manager.FileTransferCallback {
+public class AuthorizationActivity extends AppCompatActivity implements AuthManager.MessageAuthorization, AuthorizationDialog.Authorization, FileTransferManager.FileTransferCallback {
 
     private EditText email, password;
     private CustomButton login, registration;
@@ -137,7 +139,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
                 login.onPress("LOGIN");
                 request = new AuthorizationRequest.Builder().email(Encryptor.encryptText(userEmail, publicKey)).password(Encryptor.encryptText(userPassword, publicKey)).hash_user_public(getPublicKeyHash(localPublicKey)).uuid(uuid).build();
 
-                Manager.authorization(this, request);
+                AuthManager.authorization(this, request);
 
             } catch (Exception e) {
                 new ErrorDialog(this, "Authorization", new LocalErrorResponse.Builder().status("1013").message("Помилка під час шифрування.").build()).show();
@@ -175,7 +177,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
                 saveAccount(this, account);
 
                 if (!"coffee_mark.png".equals(account.getImage())) {
-                    Manager.downloadFile(this, image, new ImageHandler(this).getDirFile(image));
+                    FileTransferManager.downloadFile(this, image, new ImageHandler(this).getDirFile(image));
                 } else {
                     new AuthorizationDialog(this, "Authorization", " авторизація пройшла успішно!").show();
                 }
@@ -253,7 +255,7 @@ public class AuthorizationActivity extends AppCompatActivity implements Manager.
             if ("1002".equals(localErrorResponse.getStatus())
                     || "1005".equals(localErrorResponse.getStatus())
                     || "1006".equals(localErrorResponse.getStatus())) {
-                Manager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
+                KeyManager.setLocalPublicKey(this, new LocalPublicKeyRequest(request, getLocalPublicKey()));
                 Log.e("AuthorizationActivity", "setLocalPublicKey" + getLocalPublicKey());
 
             } else {

@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 public class CenterSnapScrollListener extends RecyclerView.OnScrollListener {
 
     public interface OnCenterItemSelected {
@@ -35,7 +37,7 @@ public class CenterSnapScrollListener extends RecyclerView.OnScrollListener {
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
             View centerView = snapHelper.findSnapView(recyclerView.getLayoutManager());
             if (centerView != null) {
-                int position = recyclerView.getLayoutManager().getPosition(centerView);
+                int position = Objects.requireNonNull(recyclerView.getLayoutManager()).getPosition(centerView);
 
                 if (selectionRunnable != null) handler.removeCallbacks(selectionRunnable);
                 selectionRunnable = () -> listener.onItemSelected(position);

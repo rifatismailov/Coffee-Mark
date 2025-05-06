@@ -32,7 +32,8 @@ import com.example.coffeemark.dialog.ErrorDialog;
 import com.example.coffeemark.cafe.Cafe;
 import com.example.coffeemark.cafe.CafeShop;
 import com.example.coffeemark.cafe.CafeAdapter;
-import com.example.coffeemark.service.Manager;
+import com.example.coffeemark.service.manager.FileTransferManager;
+import com.example.coffeemark.service.manager.AuthManager;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.util.Decryptor;
 import com.example.coffeemark.util.Encryptor;
@@ -65,15 +66,15 @@ import java.util.UUID;
  *
  * <p>Реалізує інтерфейси:
  * <ul>
- *   <li>{@link Manager.ManagerRegistration} — для обробки результату реєстрації користувача</li>
+ *   <li>{@link FileTransferManager.ManagerRegistration} — для обробки результату реєстрації користувача</li>
  * </ul>
  * </p>
  *
  * @author Ріфат Ісмаїлов
  */
 
-public class RegistrationActivity extends AppCompatActivity implements Manager.FileTransferCallback,
-        Manager.ManagerRegistration, AuthorizationDialog.Authorization,CafeAdapter.OnItemClickListener {
+public class RegistrationActivity extends AppCompatActivity implements FileTransferManager.FileTransferCallback,
+        AuthManager.ManagerRegistration, AuthorizationDialog.Authorization,CafeAdapter.OnItemClickListener {
 
     /**
      * Кастомне зображення кавової іконки.
@@ -304,7 +305,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
                     .build();
 
             // Відправка запиту на реєстрацію
-            Manager.registration(this, request);
+            AuthManager.registration(this, request);
 
         } else {
             // Якщо поля не заповнені
@@ -357,7 +358,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
             }
             Log.e("RegisterActivity", "Saved to: " + savedFile.getAbsolutePath());
 
-            Manager.uploadFile(savedFile, this);
+            FileTransferManager.uploadFile(savedFile, this);
         } catch (IOException e) {
             Log.e("RegisterActivity", "Image processing failed", e);
         }
@@ -480,19 +481,12 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
      * @param message текст повідомлення
      */
     @Override
-    public void messageToActivity(String message) {
+    public void onMessage(String message) {
         Intent intent = new Intent(ACTION_REGISTRATION_MESSAGE);
         intent.putExtra(EXTRA_MESSAGE, message);
         sendBroadcast(intent);  // Надсилання повідомлення Activity 1
     }
 
-    /**
-     * Зберігає акаунт користувача у локальне сховище.
-     */
-    @Override
-    public void saveAccount() {
-        //AccountManager.saveAccount(this, account);
-    }
 
     /**
      * Встановлює прогрес виконання.
@@ -520,7 +514,7 @@ public class RegistrationActivity extends AppCompatActivity implements Manager.F
 
     @Override
     public void continueNext() {
-        messageToActivity("Registration");
+        onMessage("Registration");
         finish();
     }
 
