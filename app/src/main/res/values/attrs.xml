@@ -32,6 +32,13 @@
         <attr name="buttonProgress"/>
     </declare-styleable>
 
+    <declare-styleable name="CustomRecyclerView">
+        <attr name="backgroundColor"  />
+        <attr name="borderColor"  />
+        <attr name="borderWidth"  />
+        <attr name="cornerRadius" />
+    </declare-styleable>
+
     <!-- CoffeeView -->
     <declare-styleable name="CoffeeView">
         <attr name="outerBackgroundColor"/>

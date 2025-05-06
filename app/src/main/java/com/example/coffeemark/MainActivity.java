@@ -23,10 +23,15 @@ import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import com.example.coffeemark.account.AccountManager;
 import com.example.coffeemark.authorization.AuthorizationActivity;
@@ -38,6 +43,9 @@ import com.example.coffeemark.cart_db.CartService;
 import com.example.coffeemark.fragment.FragmentOne;
 import com.example.coffeemark.cafe.Cafe;
 import com.example.coffeemark.fragment.FragmentTwo;
+import com.example.coffeemark.option.ScrollPickerAdapter;
+import com.example.coffeemark.search.CenterSnapScrollListener;
+import com.example.coffeemark.search.Watcher;
 import com.example.coffeemark.service.Manager;
 import com.example.coffeemark.service.search.SearchRequest;
 import com.example.coffeemark.util.Decryptor;
@@ -51,7 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch, CartService.Service.OnCartLoadedListListener, FragmentTwo.OnCartListener {
+public class MainActivity extends AppCompatActivity implements Manager.ManagerSearch, CartService.Service.OnCartLoadedListListener, FragmentTwo.OnCartListener, Watcher.OnWatcher {
 
     private final BroadcastReceiver registrationAuthorizationBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -77,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                     } catch (Exception e) {
                         Log.e("MainActivity", e.toString());
                     }
-
                 }
                 if ("Registration".equals(message)) {
                     try {
@@ -96,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
                     } catch (Exception e) {
                         Log.e("MainActivity", e.toString());
                     }
-
                 }
             }
         }
@@ -121,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
     private String password;
     private String email;
     private CartService cartService;
+    private String search = "name";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -131,18 +138,36 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         checkLocalKey(this);
         checkPublicKey(this);
         cartService = new CartService(this);
-        customButton = findViewById(R.id.request_button);
         searchInput = findViewById(R.id.search_input);
-        setupSearch(searchInput);
-
-        // Дані для вибору
-        String[] searchOptions = {"Name", "Address", "Barista", "Coffee"};
+        searchInput.addTextChangedListener(new Watcher(this));
 
         // new DatabaseHelper(this).deleteAllUsers();
         //registerRegistrationActivity();
-        startRegistration();
+        //startRegistration();
         fragmentTwo = new FragmentTwo(this);
         replaceFragment(new FragmentOne());
+        RecyclerView scrollPicker = findViewById(R.id.scroll_picker);
+        scrollPicker.setLayoutManager(new LinearLayoutManager(this));
+
+        String[] searchOptions = {"Name", "Address", "Barista", "Coffee"};
+        ScrollPickerAdapter adapter = new ScrollPickerAdapter(searchOptions, selected -> {
+            Log.e("MainActivity", "Обрано після прокрутки: " + selected);
+            search = selected.equals("search") ? "name" : selected;
+        });
+        scrollPicker.setAdapter(adapter);
+
+        // Додаємо SnapHelper
+        LinearSnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(scrollPicker);
+
+        // Визначаємо обраний елемент після прокрутки
+        scrollPicker.addOnScrollListener(new CenterSnapScrollListener(
+                scrollPicker,
+                snapHelper,
+                position -> adapter.selectPosition(position),
+                400 // затримка в мілісекундах
+        ));
+
 
         try {
             PrivateKey privateKey = loadPrivateKey(getBaseContext(), "user_private.pem");
@@ -159,46 +184,6 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
         } catch (Exception e) {
             Log.e("MainActivity", e.toString());
         }
-        customButton.setOnClickListener(new View.OnClickListener() {
-            PopupWindow popupWindow;
-
-            @Override
-            public void onClick(View view) {
-                NumberPicker picker = new NumberPicker(MainActivity.this);
-                picker.setMinValue(0);
-                picker.setMaxValue(searchOptions.length - 1);
-                picker.setDisplayedValues(searchOptions);
-                picker.setWrapSelectorWheel(true);
-
-                // Автоматичне оновлення при прокрутці
-                picker.setOnValueChangedListener((pickerView, oldVal, newVal) -> {
-                    String selected = searchOptions[newVal];
-                    Log.e("CustomNumberPicker", "Paint selected " + selected);
-                    // Оновлюємо кнопку автоматично
-                    customButton.setMessage(selected);
-
-                });
-
-
-                // Розміщуємо в LinearLayout
-                LinearLayout layout = new LinearLayout(MainActivity.this);
-                layout.setOrientation(LinearLayout.VERTICAL);
-                layout.setPadding(40, 40, 40, 40);
-                layout.setBackgroundResource(R.drawable.popup_background); // фоновий стиль
-
-                layout.addView(picker);
-
-                popupWindow = new PopupWindow(
-                        layout,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        true
-                );
-
-                popupWindow.showAsDropDown(customButton, 0, -customButton.getHeight() * 3);
-                // Явно повертаємо клавіатуру
-            }
-        });
 
     }
 
@@ -251,77 +236,39 @@ public class MainActivity extends AppCompatActivity implements Manager.ManagerSe
 
     }
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable searchRunnable;
-    private static final long DELAY_MS = 100; // затримка 500мс
-
-    private void setupSearch(EditText editText) {
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Скасовуємо попередній запуск
-                handler.removeCallbacks(searchRunnable);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                final String query = s.toString().trim();
-
-                searchRunnable = () -> {
-                    if (query.isEmpty() || editText.getSelectionStart() == 0) {
-                        cafeList.clear();
-                        replaceFragment(new FragmentOne());
-                    } else {
-                        if (!query.startsWith(" ")) {
-                            setSearch(query);
-                            replaceFragment(fragmentTwo);
-                        }
-                    }
-                };
-
-                handler.postDelayed(searchRunnable, DELAY_MS);
-            }
-        });
-    }
-
-
-    public void setSearch(String text) {
-        try {
-            runOnUiThread(() -> {
-                String search = customButton.getText().toString().equals("search") ? "name" : customButton.getText().toString();
-                SearchRequest request = new SearchRequest.Builder()
-                        .setUsername(username)
-                        .setSearchBy(search)
-                        .setSearch(text)
-                        .build();
-
-                Manager.search(this, request);
-
-            });
-        } catch (Exception e) {
-            Log.e("MainActivity", e.toString());
-
-        }
-    }
-
-
     @Override
     public void onCartLoaded(List<Cafe> cafeList) {
-        try {
-            runOnUiThread(() -> {
-                fragmentTwo.showSearch(cafeList);
-            });
-        } catch (Exception e) {
-            Log.e("MainActivity", e.toString());
-        }
+        runOnUiThread(() -> fragmentTwo.showSearch(cafeList));
     }
 
     @Override
     public void onItemClick(CafeCart cart) {
         replaceFragment(new FragmentOne(cart));
+    }
+
+    @Override
+    public void isEditEmpty() {
+        cafeList.clear();
+        replaceFragment(new FragmentOne());
+    }
+
+    @Override
+    public void isEditFull(String text) {
+        replaceFragment(fragmentTwo);
+        runOnUiThread(() -> {
+            SearchRequest request = new SearchRequest.Builder()
+                    .setUsername(username)
+                    .setSearchBy(search)
+                    .setSearch(text)
+                    .build();
+
+            Manager.search(this, request);
+        });
+
+    }
+
+    @Override
+    public EditText isEdit() {
+        return searchInput;
     }
 }
