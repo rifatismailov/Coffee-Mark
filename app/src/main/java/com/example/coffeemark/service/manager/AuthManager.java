@@ -8,9 +8,21 @@ import com.example.coffeemark.service.authorization.AuthorizationResponse;
 import com.example.coffeemark.service.registration.RegisterRequest;
 import com.example.coffeemark.service.registration.RegisterResponse;
 
+/**
+ * Менеджер аутентифікації та реєстрації користувачів.
+ * Відповідає за ініціацію запитів до API (через ApiHelper),
+ * а також за обробку успішних відповідей та помилок.
+ */
 public class AuthManager {
-    public static void registration(ManagerRegistration managerRegistration, RegisterRequest request) {
-        // Викликаємо метод з ApiHelper
+
+    /**
+     * Реєстрація користувача через сервер API.
+     *
+     * @param registration об'єкт колбеку, що обробляє результат реєстрації.
+     * @param request      запит, що містить дані користувача для реєстрації.
+     */
+    public static void registration(Registration registration, RegisterRequest request) {
+        // Викликаємо метод із ApiHelper
         ApiHelper.register(request, new ApiHelper.ApiCallback<RegisterResponse>() {
             @Override
             public void onSuccess(RegisterResponse response) {
@@ -18,10 +30,9 @@ public class AuthManager {
                 Log.e("RegisterActivity", "Message: " + message);
 
                 if (response.isSuccess()) {
-                    managerRegistration.onSuccess(message);
-
+                    registration.onSuccess(message);
                 } else {
-                    managerRegistration.onError(message);
+                    registration.onError(message);
                 }
             }
 
@@ -30,6 +41,7 @@ public class AuthManager {
                 Log.e("RegisterActivity", "HTTP-код помилки: " + code);
                 Log.e("RegisterActivity", "Повідомлення: " + errorMessage);
 
+                // Логування типових помилок HTTP
                 switch (code) {
                     case 400:
                         Log.e("RegisterActivity", "Невірний запит (Bad Request)");
@@ -53,21 +65,27 @@ public class AuthManager {
                         Log.e("RegisterActivity", "Інша помилка: " + code);
                 }
 
-                managerRegistration.onError(errorMessage);
+                // Передаємо повідомлення про помилку назад у колбек
+                registration.onError(errorMessage);
             }
         });
     }
 
-    public static void authorization(MessageAuthorization message_authorization, AuthorizationRequest request) {
-        // Викликаємо метод з ApiHelper
+    /**
+     * Авторизація користувача через сервер API.
+     *
+     * @param message_authorization об'єкт колбеку, що обробляє результат авторизації.
+     * @param request               запит із даними для авторизації (логін, пароль тощо).
+     */
+    public static void authorization(Authorization message_authorization, AuthorizationRequest request) {
+        // Викликаємо метод із ApiHelper
         ApiHelper.authorization(request, new ApiHelper.ApiCallback<AuthorizationResponse>() {
             @Override
             public void onSuccess(AuthorizationResponse response) {
-
                 String message = response.getMessage();
+
                 if (response.isSuccess()) {
                     message_authorization.onSuccess(message);
-
                 } else {
                     message_authorization.onError(message);
                 }
@@ -75,6 +93,7 @@ public class AuthManager {
 
             @Override
             public void onError(String errorMessage, int code) {
+                // Логування типових помилок HTTP
                 switch (code) {
                     case 400:
                         Log.e("AuthorizationActivity", "Невірний запит (Bad Request)");
@@ -102,19 +121,55 @@ public class AuthManager {
         });
     }
 
-    public interface MessageAuthorization {
+    /**
+     * Інтерфейс для обробки результатів авторизації користувача.
+     */
+    public interface Authorization {
+        /**
+         * Викликається при успішній авторизації.
+         *
+         * @param message повідомлення з сервера (наприклад, токен або статус).
+         */
         void onSuccess(String message);
 
+        /**
+         * Викликається при помилці авторизації або відмові.
+         *
+         * @param message повідомлення про помилку.
+         */
         void onError(String message);
 
+        /**
+         * Повертає локальний публічний ключ клієнта, якщо він є.
+         *
+         * @return локальний публічний ключ у форматі рядка.
+         */
         String getLocalPublicKey();
     }
 
-    public interface ManagerRegistration {
+    /**
+     * Інтерфейс для обробки результатів реєстрації користувача.
+     */
+    public interface Registration {
+        /**
+         * Викликається при успішній реєстрації.
+         *
+         * @param message повідомлення з сервера.
+         */
         void onSuccess(String message);
 
+        /**
+         * Викликається при помилці реєстрації або відмові.
+         *
+         * @param message повідомлення про помилку.
+         */
         void onError(String message);
 
+        /**
+         * Метод для обробки додаткового повідомлення з сервера (опційно).
+         *
+         * @param message довільне повідомлення (не завжди використовується).
+         */
         void onMessage(String message);
     }
 }

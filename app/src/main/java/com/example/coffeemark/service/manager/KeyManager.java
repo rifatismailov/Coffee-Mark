@@ -79,7 +79,7 @@ public class KeyManager {
         });
     }
 
-    public static void setLocalPublicKey(AuthManager.MessageAuthorization authorization, LocalPublicKeyRequest request) {
+    public static void setLocalPublicKey(AuthManager.Authorization authorization, LocalPublicKeyRequest request) {
         ApiHelper.setLocalPublicKey(request, new ApiHelper.ApiCallback<LocalPublicKeyResponse>() {
             @Override
             public void onSuccess(LocalPublicKeyResponse response) {

@@ -66,7 +66,8 @@ import java.util.UUID;
  *
  * <p>Реалізує інтерфейси:
  * <ul>
- *   <li>{@link FileTransferManager.ManagerRegistration} — для обробки результату реєстрації користувача</li>
+ *   <li>{@link FileTransferManager.FileTransferCallback} — []</li>
+ *   <li>{@link AuthManager.Registration — для обробки результату реєстрації користувача</li>
  * </ul>
  * </p>
  *
@@ -74,7 +75,7 @@ import java.util.UUID;
  */
 
 public class RegistrationActivity extends AppCompatActivity implements FileTransferManager.FileTransferCallback,
-        AuthManager.ManagerRegistration, AuthorizationDialog.Authorization,CafeAdapter.OnItemClickListener {
+        AuthManager.Registration, AuthorizationDialog.Authorization, CafeAdapter.OnItemClickListener {
 
     /**
      * Кастомне зображення кавової іконки.
@@ -205,7 +206,7 @@ public class RegistrationActivity extends AppCompatActivity implements FileTrans
         imageHandler = new ImageHandler(this);
 
         // Ініціалізація RecyclerView для кавʼярень
-        adapter = new CafeAdapter(cafeShopList_for_App, imageHandler,this);
+        adapter = new CafeAdapter(cafeShopList_for_App, imageHandler, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -253,7 +254,7 @@ public class RegistrationActivity extends AppCompatActivity implements FileTrans
             try {
                 registerUser();
             } catch (Exception e) {
-                Log.e("RegisterActivity", "registerUser "+e.toString());
+                Log.e("RegisterActivity", "registerUser " + e.toString());
             }
         });
         coffeeView.setOnClickListener(view -> openGallery());
@@ -378,24 +379,24 @@ public class RegistrationActivity extends AppCompatActivity implements FileTrans
             JSONObject jsonObject = new JSONObject(message);
             Respond respond = new Respond(jsonObject);
 
-            Log.e("RegisterActivity", "jsonObject "+jsonObject);
-            Log.e("RegisterActivity", "localPrivateKey "+localPrivateKey);
+            Log.e("RegisterActivity", "jsonObject " + jsonObject);
+            Log.e("RegisterActivity", "localPrivateKey " + localPrivateKey);
 
             // Дешифрування даних з respond
             String usernameFromRespond = Decryptor.decryptText(respond.getUsername(), localPrivateKey);
-            Log.e("RegisterActivity", "usernameFromRespond "+usernameFromRespond);
+            Log.e("RegisterActivity", "usernameFromRespond " + usernameFromRespond);
 
             String passwordFromRespond = Decryptor.decryptText(respond.getPassword(), localPrivateKey);
-            Log.e("RegisterActivity", "passwordFromRespond "+passwordFromRespond);
+            Log.e("RegisterActivity", "passwordFromRespond " + passwordFromRespond);
 
             String emailFromRespond = Decryptor.decryptText(respond.getEmail(), localPrivateKey);
-            Log.e("RegisterActivity", "emailFromRespond "+emailFromRespond);
+            Log.e("RegisterActivity", "emailFromRespond " + emailFromRespond);
 
             String roleFromRespond = respond.getRole();
             String imageFromRespond = Decryptor.decryptText(respond.getImage(), localPrivateKey);
-            Log.e("RegisterActivity", "imageFromRespond "+imageFromRespond);
+            Log.e("RegisterActivity", "imageFromRespond " + imageFromRespond);
 
-            Log.e("RegisterActivity", "AccountManager "+AccountManager.getImage(this));
+            Log.e("RegisterActivity", "AccountManager " + AccountManager.getImage(this));
 
             if (!"coffee_mark.png".equals(imageFromRespond)) {
                 ImageHandler imageHandler = new ImageHandler(this);
@@ -406,19 +407,19 @@ public class RegistrationActivity extends AppCompatActivity implements FileTrans
 
             // Отримуємо дані з registration
             String usernameFromRegistration = registration.getUsername();
-            Log.e("RegisterActivity", "usernameFromRegistration "+usernameFromRegistration);
+            Log.e("RegisterActivity", "usernameFromRegistration " + usernameFromRegistration);
 
             String passwordFromRegistration = registration.getPassword();
-            Log.e("RegisterActivity", "passwordFromRegistration "+passwordFromRegistration);
+            Log.e("RegisterActivity", "passwordFromRegistration " + passwordFromRegistration);
 
             String emailFromRegistration = registration.getEmail();
-            Log.e("RegisterActivity", "emailFromRegistration "+emailFromRegistration);
+            Log.e("RegisterActivity", "emailFromRegistration " + emailFromRegistration);
 
             String roleFromRegistration = registration.getRole();
-            Log.e("RegisterActivity", "roleFromRegistration "+roleFromRegistration);
+            Log.e("RegisterActivity", "roleFromRegistration " + roleFromRegistration);
 
             String imageFromRegistration = registration.getImage();
-            Log.e("RegisterActivity", "imageFromRegistration "+imageFromRegistration);
+            Log.e("RegisterActivity", "imageFromRegistration " + imageFromRegistration);
 
 
             // Перевірка чи дані з registration співпадають з respond

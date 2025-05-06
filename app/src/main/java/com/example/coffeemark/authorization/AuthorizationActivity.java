@@ -52,15 +52,15 @@ import java.util.UUID;
  *
  * <p>Реалізує інтерфейси:
  * <ul>
- *   <li>{@link FileTransferManager.MessageAuthorization} — для отримання результату авторизації</li>
- *   <li>{@link AuthorizationDialog.Authorization} — для подальшої обробки після успішної авторизації</li>
+ *   <li>{@link FileTransferManager.FileTransferCallback} — []</li>
+ *   <li>{@link AuthorizationDialog.Authorization} — для отримання результату авторизації та для подальшої обробки після успішної авторизації</li>
  * </ul>
  * </p>
  *
  * @author Ріфат Ісмаїлов
  */
 
-public class AuthorizationActivity extends AppCompatActivity implements AuthManager.MessageAuthorization, AuthorizationDialog.Authorization, FileTransferManager.FileTransferCallback {
+public class AuthorizationActivity extends AppCompatActivity implements AuthManager.Authorization, AuthorizationDialog.Authorization, FileTransferManager.FileTransferCallback {
 
     private EditText email, password;
     private CustomButton login, registration;
@@ -266,7 +266,6 @@ public class AuthorizationActivity extends AppCompatActivity implements AuthMana
             Log.e("AuthorizationActivity", "Помилка під час обробки помилки " + e);
         }
         login.stopLoading();
-
     }
 
 
