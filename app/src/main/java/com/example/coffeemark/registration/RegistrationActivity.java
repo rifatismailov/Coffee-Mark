@@ -66,8 +66,10 @@ import java.util.UUID;
  *
  * <p>Реалізує інтерфейси:
  * <ul>
- *   <li>{@link FileTransferManager.FileTransferCallback} — []</li>
- *   <li>{@link AuthManager.Registration — для обробки результату реєстрації користувача</li>
+ <li>{@link FileTransferManager.FileTransferCallback} — для обробки завантаження зображення</li>
+ <li>{@link AuthManager.Registration} — для обробки відповіді від сервера після реєстрації</li>
+ <li>{@link AuthorizationDialog.Authorization} — для завершення процесу та переходу до наступного кроку</li>
+
  * </ul>
  * </p>
  *
@@ -379,24 +381,15 @@ public class RegistrationActivity extends AppCompatActivity implements FileTrans
             JSONObject jsonObject = new JSONObject(message);
             Respond respond = new Respond(jsonObject);
 
-            Log.e("RegisterActivity", "jsonObject " + jsonObject);
-            Log.e("RegisterActivity", "localPrivateKey " + localPrivateKey);
-
             // Дешифрування даних з respond
             String usernameFromRespond = Decryptor.decryptText(respond.getUsername(), localPrivateKey);
-            Log.e("RegisterActivity", "usernameFromRespond " + usernameFromRespond);
 
             String passwordFromRespond = Decryptor.decryptText(respond.getPassword(), localPrivateKey);
-            Log.e("RegisterActivity", "passwordFromRespond " + passwordFromRespond);
 
             String emailFromRespond = Decryptor.decryptText(respond.getEmail(), localPrivateKey);
-            Log.e("RegisterActivity", "emailFromRespond " + emailFromRespond);
 
             String roleFromRespond = respond.getRole();
             String imageFromRespond = Decryptor.decryptText(respond.getImage(), localPrivateKey);
-            Log.e("RegisterActivity", "imageFromRespond " + imageFromRespond);
-
-            Log.e("RegisterActivity", "AccountManager " + AccountManager.getImage(this));
 
             if (!"coffee_mark.png".equals(imageFromRespond)) {
                 ImageHandler imageHandler = new ImageHandler(this);
@@ -407,19 +400,14 @@ public class RegistrationActivity extends AppCompatActivity implements FileTrans
 
             // Отримуємо дані з registration
             String usernameFromRegistration = registration.getUsername();
-            Log.e("RegisterActivity", "usernameFromRegistration " + usernameFromRegistration);
 
             String passwordFromRegistration = registration.getPassword();
-            Log.e("RegisterActivity", "passwordFromRegistration " + passwordFromRegistration);
 
             String emailFromRegistration = registration.getEmail();
-            Log.e("RegisterActivity", "emailFromRegistration " + emailFromRegistration);
 
             String roleFromRegistration = registration.getRole();
-            Log.e("RegisterActivity", "roleFromRegistration " + roleFromRegistration);
 
             String imageFromRegistration = registration.getImage();
-            Log.e("RegisterActivity", "imageFromRegistration " + imageFromRegistration);
 
 
             // Перевірка чи дані з registration співпадають з respond
