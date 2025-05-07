@@ -128,7 +128,7 @@ public class ApiHelper {
      */
     public static void authorization(AuthorizationRequest request, ApiCallback<AuthorizationResponse> callback) {
         ApiService api = RetrofitClient.getClient().create(ApiService.class);
-        sendRequest(api.getAuthorization(request), callback);
+        sendRequest(api.authorization(request), callback);
     }
 
     /**
@@ -139,7 +139,7 @@ public class ApiHelper {
      */
     public static void register(RegisterRequest request, ApiCallback<RegisterResponse> callback) {
         ApiService api = RetrofitClient.getClient().create(ApiService.class);
-        sendRequest(api.registerUser(request), callback);
+        sendRequest(api.registration(request), callback);
     }
 
     /**

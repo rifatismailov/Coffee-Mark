@@ -20,16 +20,13 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
-import retrofit2.http.Streaming;
-import retrofit2.http.Url;
 
 public interface ApiService {
     @POST("/api/auth/register")
-    Call<RegisterResponse> registerUser(@Body RegisterRequest request);
+    Call<RegisterResponse> registration(@Body RegisterRequest request);
 
     @POST("/api/auth/authorization")
-    Call<AuthorizationResponse> getAuthorization(@Body AuthorizationRequest request);
+    Call<AuthorizationResponse> authorization(@Body AuthorizationRequest request);
 
     @POST("/api/auth/public-key")
     Call<PublicKeyResponse> getPublicKey(@Body PublicKeyRequest request);
