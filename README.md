@@ -42,8 +42,28 @@
 **Приклад:**
 
 ```java
-@POST("/api/auth/register")
+    @POST("/api/auth/register")
 Call<RegisterResponse> registerUser(@Body RegisterRequest request);
+
+@POST("/api/auth/authorization")
+Call<AuthorizationResponse> getAuthorization(@Body AuthorizationRequest request);
+
+@POST("/api/auth/public-key")
+Call<PublicKeyResponse> getPublicKey(@Body PublicKeyRequest request);
+
+@POST("/api/auth/local-public-key")
+Call<LocalPublicKeyResponse> setLocalPublicKey(@Body LocalPublicKeyRequest request);
+
+@Multipart
+@POST("/api/files/upload")
+Call<ResponseBody> uploadFile(@Part MultipartBody.Part file);
+
+
+@GET("/api/files/download/{fileName}")
+Call<ResponseBody> downloadFile(@Path("fileName") String fileName);
+
+@POST("/api/request/search")
+Call<SearchResponse> search(@Body SearchRequest request);
 ```
 
 * `RetrofitClient` формує базовий URL (`http://192.168.177.3:8080`).
